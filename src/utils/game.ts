@@ -1,9 +1,9 @@
-import { Question, Difficulty, Rank, LeaderboardEntry, QuestionLevel } from '../types';
+import { Question, Difficulty, Rank, QuestionLevel } from '../types';
 
 // Fetch questions from the corresponding JSON file
 export const fetchQuestions = async (difficulty: Difficulty): Promise<Question[]> => {
   try {
-    const response = await fetch(`/integer_invasion/questions/${difficulty}.json`);
+    const response = await fetch(`/operations_invasion/questions/${difficulty}.json`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

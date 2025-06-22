@@ -15,8 +15,8 @@ const PlayerStats: React.FC<PlayerStatsProps> = ({
   // Render hearts for lives
   const renderLives = () => {
     const hearts = [];
-    
-    for (let i = 0; i < player.maxLives; i++) {
+    // Assume max 3 lives for all players
+    for (let i = 0; i < 3; i++) {
       if (i < player.lives) {
         // Full heart
         hearts.push(
@@ -33,7 +33,6 @@ const PlayerStats: React.FC<PlayerStatsProps> = ({
         );
       }
     }
-    
     return hearts;
   };
   
@@ -59,12 +58,6 @@ const PlayerStats: React.FC<PlayerStatsProps> = ({
         
         <div className="flex justify-between items-center">
           <div className="flex">{renderLives()}</div>
-          
-          {player.streak > 1 && (
-            <div className="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-bold">
-              {player.streak}x Streak
-            </div>
-          )}
         </div>
       </div>
     </div>

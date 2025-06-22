@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LeaderboardEntry, Difficulty } from '../types';
+import { LeaderboardEntry } from '../types';
 
 type LeaderboardTab = 'integers' | 'rational' | 'complex';
 
@@ -19,9 +19,9 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ gameMode, onClose }) => {
       try {
         let url = '';
         if (gameMode === 'battle') {
-          url = 'http://localhost:3001/leaderboards/battle';
+          url = '/operations_invasion/leaderboards/battle.json';
         } else {
-          url = `http://localhost:3001/leaderboards/${activeTab}`;
+          url = `/operations_invasion/leaderboards/${activeTab}.json`;
         }
         const response = await fetch(url);
         const data: LeaderboardEntry[] = await response.json();

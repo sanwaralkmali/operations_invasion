@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { GameState, GameMode, Difficulty, Player } from './types';
 import { calculateRank } from './utils/game';
@@ -45,14 +45,6 @@ function App() {
     ]);
   };
 
-  const handleSinglePlayerGameOver = (score: number, correct: number, total: number, time: number) => {
-    endGame(score, { correct, total, time });
-  };
-
-  const handleBattleGameOver = (score: number, winner?: string) => {
-    endGame(score, { winner });
-  };
-
   // End the game and show results
   const endGame = (score: number, options: { correct?: number; total?: number; time?: number; winner?: string, winnerStats?: any } = {}) => {
     const { correct = 0, total = 0, time = 0, winner, winnerStats } = options;
@@ -85,7 +77,7 @@ function App() {
   };
 
   return (
-    <BrowserRouter basename="/integer_invasion">
+    <BrowserRouter basename="/operations_invasion">
       <div className="min-h-screen flex flex-col bg-gray-50">
         <main className="flex-1">
           <Routes>

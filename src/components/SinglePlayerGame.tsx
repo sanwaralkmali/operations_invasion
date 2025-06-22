@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Player, Difficulty, Question, Wave, LeaderboardEntry } from '../types';
-import { generateWaves, formatTime, calculateRank, fetchQuestions } from '../utils/game';
+import { Player, Difficulty, Question, Wave } from '../types';
+import { generateWaves, formatTime, fetchQuestions } from '../utils/game';
 import QuestionDisplay from './QuestionDisplay';
 import ProgressBar from './ProgressBar';
 import Leaderboard from './Leaderboard';
@@ -166,7 +166,7 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
     setTimeout(() => {
       setShowAnimation(false);
       setTotalQuestionsAnswered(prev => prev + 1);
-      moveToNextQuestion(isCorrect);
+      moveToNextQuestion();
     }, 1000);
   };
   
@@ -187,12 +187,12 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
     setTimeout(() => {
       setShowAnimation(false);
       setTotalQuestionsAnswered(prev => prev + 1);
-      moveToNextQuestion(false);
+      moveToNextQuestion();
     }, 1000);
   };
   
   // Move to the next question or wave
-  const moveToNextQuestion = (lastAnswerCorrect: boolean) => {
+  const moveToNextQuestion = () => {
     const currentWaveObj = waves[currentWave - 1];
     const nextQuestionIndex = questionIndex + 1;
     
@@ -232,39 +232,6 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
   // End the game
   const endGame = () => {
     setGameActive(false);
-
-    const rank = calculateRank(score, difficulty);
-    const newEntry: LeaderboardEntry = {
-      playerName: player.name,
-      score,
-      difficulty,
-      date: new Date().toISOString(),
-      rank,
-    };
-
-    const updateLeaderboard = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3001/leaderboards/${difficulty}`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newEntry),
-          }
-        );
-        if (response.ok) {
-          console.log('Leaderboard updated successfully.');
-        } else {
-          console.error('Failed to update leaderboard.');
-        }
-      } catch (error) {
-        console.error('Error updating leaderboard:', error);
-      }
-    };
-
-    updateLeaderboard();
 
     // Delay before showing game over screen
     const timeTaken = Math.floor((Date.now() - startTime) / 1000);

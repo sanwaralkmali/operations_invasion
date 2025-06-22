@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Player, Difficulty, Question, LeaderboardEntry } from '../types';
-import { fetchQuestions, shuffleArray, formatTime } from '../utils/game';
+import { Player, Difficulty, Question } from '../types';
+import { fetchQuestions, shuffleArray } from '../utils/game';
 import QuestionDisplay from './QuestionDisplay';
 import ProgressBar from './ProgressBar';
 
@@ -31,8 +31,6 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
   
   // Animation and log state
   const [showAnimation, setShowAnimation] = useState<'attack' | 'shield' | 'correct' | 'incorrect' | null>(null);
-  const [attackingPlayer, setAttackingPlayer] = useState<number | null>(null);
-  const [defendingPlayer, setDefendingPlayer] = useState<number | null>(null);
   const [statusMessage, setStatusMessage] = useState<{ text: string; type: StatusMessageType }>({ text: '', type: 'info' });
   
   // Loading and UI state
@@ -47,8 +45,7 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
   const [turnComplete, setTurnComplete] = useState(false);
 
   const initializeGame = useCallback(() => {
-    // ... (logic from previous implementation is mostly fine)
-    const allQuestions = fetchQuestions(difficulty).then(allQuestions => {
+    fetchQuestions(difficulty).then(allQuestions => {
       if (allQuestions.length < 22) { // Need enough for sudden death
         console.error("Not enough questions for a full battle.");
         // Handle this case - maybe show an error
@@ -80,8 +77,6 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
   
   const startTurn = () => {
     setShowAnimation(null);
-    setAttackingPlayer(null);
-    setDefendingPlayer(null);
     setTimeLeft(30); // Reset timer to 30 seconds
     setAnswered(false);
   };
@@ -139,8 +134,6 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
             } else {
                 defender.lives -= 1;
                 newPlayers[defenderIndex] = defender;
-                setAttackingPlayer(currentPlayerIndex);
-                setDefendingPlayer(defenderIndex);
                 setTimeout(() => setShowAnimation('attack'), 500);
 
                 if (defender.lives <= 0) {
@@ -184,18 +177,19 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
     const { id, rank, ...winnerStats } = postGameWinnerData;
     onGameOver(postGameWinnerData.score, postGameWinnerData.name, winnerStats);
 
-    const newEntry: LeaderboardEntry = {
-      playerName: postGameWinnerData.name,
-      score: postGameWinnerData.score,
-      difficulty,
-      date: new Date().toISOString(),
-    };
-    
-    fetch('http://localhost:3001/leaderboards/battle', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newEntry),
-    });
+    // On static hosting, POST is not supported. Optionally, show a message or skip this step.
+    // const newEntry: LeaderboardEntry = {
+    //   playerName: postGameWinnerData.name,
+    //   score: postGameWinnerData.score,
+    //   difficulty,
+    //   date: new Date().toISOString(),
+    // };
+    // 
+    // fetch('/operations_invasion/leaderboards/battle.json', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(newEntry),
+    // });
   }, [postGameWinnerData, onGameOver, difficulty]);
 
   useEffect(() => {
