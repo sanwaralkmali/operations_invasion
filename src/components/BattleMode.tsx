@@ -43,6 +43,7 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
   // Add a state to track if the current question has been answered
   const [answered, setAnswered] = useState(false);
   const [turnComplete, setTurnComplete] = useState(false);
+  const [suddenDeathResolved, setSuddenDeathResolved] = useState(false);
 
   const initializeGame = useCallback(() => {
     fetchQuestions(difficulty).then(allQuestions => {
@@ -66,6 +67,7 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
       setBattlePhase('regular');
       setLastChancePlayerIndex(null);
       setStatusMessage({ text: `The battle begins! ${players[0].name} starts!`, type: 'info' });
+      setSuddenDeathResolved(false);
       startTurn();
       setIsLoading(false);
     });
@@ -116,13 +118,12 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
       
       if (correct) {
         attacker.correctAnswers += 1;
-        const scoreGain = 10 + Math.max(0, 15 - answerTime);
-        attacker.score += scoreGain;
-
         if (battlePhase === 'suddenDeath') {
             attacker.suddenDeathTime = answerTime;
             setStatusMessage({ text: `${attacker.name} answered correctly in ${answerTime}s!`, type: 'success' });
         } else {
+            const scoreGain = 10 + Math.max(0, 15 - answerTime);
+            attacker.score += scoreGain;
             setShowAnimation('correct');
             setStatusMessage({ text: 'A direct hit!', type: 'success' });
             
@@ -208,6 +209,8 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
 
   const endGame = (finalPlayers: PlayerStats[]) => {
     if (!gameActive && battlePhase !== 'suddenDeath') return;
+    if (battlePhase === 'suddenDeath' && suddenDeathResolved) return;
+    if (battlePhase === 'suddenDeath') setSuddenDeathResolved(true);
     setGameActive(false);
 
     let winner: PlayerStats | undefined;
