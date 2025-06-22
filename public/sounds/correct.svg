@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+  <rect width="100" height="100" fill="#e6ffe6"/>
+  <text x="50" y="40" font-family="Arial" font-size="12" text-anchor="middle" dominant-baseline="middle" fill="#00aa00">
+    Correct Sound
+  </text>
+  <path d="M30,50 L45,65 L70,35" stroke="#00aa00" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M35,35 L35,65 L50,65 L65,80 L65,20 L50,35 Z" fill="#00aa00" opacity="0.3"/>
+  <path d="M75,40 Q85,50 75,60" stroke="#00aa00" stroke-width="3" fill="none"/>
+</svg>

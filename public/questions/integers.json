@@ -1,0 +1,633 @@
+[
+  {
+    "question": "3 + 5",
+    "options": [8, 2, 15, 35],
+    "correctAnswer": 8,
+    "level": "too easy"
+  },
+  {
+    "question": "7 - 4",
+    "options": [3, 11, -3, 28],
+    "correctAnswer": 3,
+    "level": "too easy"
+  },
+  {
+    "question": "6 × 2",
+    "options": [12, 8, 4, 3],
+    "correctAnswer": 12,
+    "level": "too easy"
+  },
+  {
+    "question": "8 ÷ 4",
+    "options": [2, 4, 32, 12],
+    "correctAnswer": 2,
+    "level": "too easy"
+  },
+  {
+    "question": "9 + 6",
+    "options": [15, 3, 54, 96],
+    "correctAnswer": 15,
+    "level": "too easy"
+  },
+  {
+    "question": "12 - 7",
+    "options": [5, 19, -5, 84],
+    "correctAnswer": 5,
+    "level": "too easy"
+  },
+  {
+    "question": "4 × 5",
+    "options": [20, 9, 1, 45],
+    "correctAnswer": 20,
+    "level": "too easy"
+  },
+  {
+    "question": "15 ÷ 3",
+    "options": [5, 12, 18, 45],
+    "correctAnswer": 5,
+    "level": "too easy"
+  },
+  {
+    "question": "(-3) + 8",
+    "options": [5, -5, 11, -11],
+    "correctAnswer": 5,
+    "level": "easy"
+  },
+  {
+    "question": "(-7) + 4",
+    "options": [-3, 3, -11, 11],
+    "correctAnswer": -3,
+    "level": "easy"
+  },
+  {
+    "question": "5 + (-9)",
+    "options": [-4, 4, 14, -14],
+    "correctAnswer": -4,
+    "level": "easy"
+  },
+  {
+    "question": "(-6) + (-2)",
+    "options": [-8, 8, -4, 4],
+    "correctAnswer": -8,
+    "level": "easy"
+  },
+  {
+    "question": "10 - 15",
+    "options": [-5, 5, 25, -25],
+    "correctAnswer": -5,
+    "level": "easy"
+  },
+  {
+    "question": "(-8) - 3",
+    "options": [-11, 11, -5, 5],
+    "correctAnswer": -11,
+    "level": "easy"
+  },
+  {
+    "question": "6 - (-4)",
+    "options": [10, -10, 2, -2],
+    "correctAnswer": 10,
+    "level": "easy"
+  },
+  {
+    "question": "(-12) - (-5)",
+    "options": [-7, 7, -17, 17],
+    "correctAnswer": -7,
+    "level": "easy"
+  },
+  {
+    "question": "3 × (-4)",
+    "options": [-12, 12, -7, 7],
+    "correctAnswer": -12,
+    "level": "easy"
+  },
+  {
+    "question": "(-5) × 6",
+    "options": [-30, 30, -11, 11],
+    "correctAnswer": -30,
+    "level": "easy"
+  },
+  {
+    "question": "(-7) × (-3)",
+    "options": [21, -21, -10, 10],
+    "correctAnswer": 21,
+    "level": "medium"
+  },
+  {
+    "question": "8 × (-2)",
+    "options": [-16, 16, -6, 6],
+    "correctAnswer": -16,
+    "level": "medium"
+  },
+  {
+    "question": "(-9) × 4",
+    "options": [-36, 36, -5, 5],
+    "correctAnswer": -36,
+    "level": "medium"
+  },
+  {
+    "question": "(-6) × (-7)",
+    "options": [42, -42, -13, 13],
+    "correctAnswer": 42,
+    "level": "medium"
+  },
+  {
+    "question": "18 ÷ (-3)",
+    "options": [-6, 6, -15, 15],
+    "correctAnswer": -6,
+    "level": "medium"
+  },
+  {
+    "question": "(-20) ÷ 4",
+    "options": [-5, 5, -16, 16],
+    "correctAnswer": -5,
+    "level": "medium"
+  },
+  {
+    "question": "(-24) ÷ (-6)",
+    "options": [4, -4, -18, 18],
+    "correctAnswer": 4,
+    "level": "medium"
+  },
+  {
+    "question": "35 ÷ (-7)",
+    "options": [-5, 5, -28, 28],
+    "correctAnswer": -5,
+    "level": "medium"
+  },
+  {
+    "question": "(-42) ÷ (-7)",
+    "options": [6, -6, -35, 35],
+    "correctAnswer": 6,
+    "level": "medium"
+  },
+  {
+    "question": "(-15) + 23",
+    "options": [8, -8, 38, -38],
+    "correctAnswer": 8,
+    "level": "medium"
+  },
+  {
+    "question": "17 - (-9)",
+    "options": [26, -26, 8, -8],
+    "correctAnswer": 26,
+    "level": "medium"
+  },
+  {
+    "question": "(-14) - 8",
+    "options": [-22, 22, -6, 6],
+    "correctAnswer": -22,
+    "level": "medium"
+  },
+  {
+    "question": "(-11) × 5",
+    "options": [-55, 55, -6, 6],
+    "correctAnswer": -55,
+    "level": "hard"
+  },
+  {
+    "question": "(-8) × (-9)",
+    "options": [72, -72, -17, 17],
+    "correctAnswer": 72,
+    "level": "hard"
+  },
+  {
+    "question": "(-48) ÷ 8",
+    "options": [-6, 6, -40, 40],
+    "correctAnswer": -6,
+    "level": "hard"
+  },
+  {
+    "question": "(-63) ÷ (-9)",
+    "options": [7, -7, -54, 54],
+    "correctAnswer": 7,
+    "level": "hard"
+  },
+  {
+    "question": "(-25) + 37",
+    "options": [12, -12, 62, -62],
+    "correctAnswer": 12,
+    "level": "hard"
+  },
+  {
+    "question": "(-19) - (-13)",
+    "options": [-6, 6, -32, 32],
+    "correctAnswer": -6,
+    "level": "hard"
+  },
+  {
+    "question": "28 - (-15)",
+    "options": [43, -43, 13, -13],
+    "correctAnswer": 43,
+    "level": "hard"
+  },
+  {
+    "question": "(-34) - 18",
+    "options": [-52, 52, -16, 16],
+    "correctAnswer": -52,
+    "level": "hard"
+  },
+  {
+    "question": "(-12) × (-11)",
+    "options": [132, -132, -23, 23],
+    "correctAnswer": 132,
+    "level": "hard"
+  },
+  {
+    "question": "(-84) ÷ 12",
+    "options": [-7, 7, -72, 72],
+    "correctAnswer": -7,
+    "level": "hard"
+  },
+  {
+    "question": "(-5) × 8 + 12",
+    "options": [-28, 28, -52, 52],
+    "correctAnswer": -28,
+    "level": "too hard"
+  },
+  {
+    "question": "15 + (-7) × 3",
+    "options": [-6, 6, 24, -24],
+    "correctAnswer": -6,
+    "level": "too hard"
+  },
+  {
+    "question": "(-6) × 4 - 8",
+    "options": [-32, 32, -16, 16],
+    "correctAnswer": -32,
+    "level": "too hard"
+  },
+  {
+    "question": "20 ÷ (-4) + 7",
+    "options": [2, -2, 12, -12],
+    "correctAnswer": 2,
+    "level": "too hard"
+  },
+  {
+    "question": "(-18) ÷ 3 × 2",
+    "options": [-12, 12, -3, 3],
+    "correctAnswer": -12,
+    "level": "too hard"
+  },
+  {
+    "question": "(-9) + 15 - 8",
+    "options": [-2, 2, 14, -14],
+    "correctAnswer": -2,
+    "level": "too hard"
+  },
+  {
+    "question": "7 × (-3) + 25",
+    "options": [4, -4, 46, -46],
+    "correctAnswer": 4,
+    "level": "too hard"
+  },
+  {
+    "question": "(-36) ÷ (-6) - 4",
+    "options": [2, -2, 10, -10],
+    "correctAnswer": 2,
+    "level": "too hard"
+  },
+  {
+    "question": "(-8) × 3 + 30",
+    "options": [6, -6, 54, -54],
+    "correctAnswer": 6,
+    "level": "too hard"
+  },
+  {
+    "question": "45 ÷ (-9) × 2",
+    "options": [-10, 10, -2.5, 2.5],
+    "correctAnswer": -10,
+    "level": "too hard"
+  },
+  {
+    "question": "13 + (-5)",
+    "options": [8, -8, 18, -18],
+    "correctAnswer": 8,
+    "level": "easy"
+  },
+  {
+    "question": "(-16) + 9",
+    "options": [-7, 7, -25, 25],
+    "correctAnswer": -7,
+    "level": "easy"
+  },
+  {
+    "question": "11 - 18",
+    "options": [-7, 7, 29, -29],
+    "correctAnswer": -7,
+    "level": "easy"
+  },
+  {
+    "question": "(-13) - 6",
+    "options": [-19, 19, -7, 7],
+    "correctAnswer": -19,
+    "level": "easy"
+  },
+  {
+    "question": "14 - (-7)",
+    "options": [21, -21, 7, -7],
+    "correctAnswer": 21,
+    "level": "easy"
+  },
+  {
+    "question": "(-10) - (-4)",
+    "options": [-6, 6, -14, 14],
+    "correctAnswer": -6,
+    "level": "easy"
+  },
+  {
+    "question": "9 × (-5)",
+    "options": [-45, 45, -4, 4],
+    "correctAnswer": -45,
+    "level": "medium"
+  },
+  {
+    "question": "(-12) × 3",
+    "options": [-36, 36, -9, 9],
+    "correctAnswer": -36,
+    "level": "medium"
+  },
+  {
+    "question": "(-4) × (-8)",
+    "options": [32, -32, -12, 12],
+    "correctAnswer": 32,
+    "level": "medium"
+  },
+  {
+    "question": "27 ÷ (-9)",
+    "options": [-3, 3, -18, 18],
+    "correctAnswer": -3,
+    "level": "medium"
+  },
+  {
+    "question": "(-32) ÷ 8",
+    "options": [-4, 4, -24, 24],
+    "correctAnswer": -4,
+    "level": "medium"
+  },
+  {
+    "question": "(-56) ÷ (-8)",
+    "options": [7, -7, -48, 48],
+    "correctAnswer": 7,
+    "level": "medium"
+  },
+  {
+    "question": "(-21) + 35",
+    "options": [14, -14, 56, -56],
+    "correctAnswer": 14,
+    "level": "medium"
+  },
+  {
+    "question": "26 - (-12)",
+    "options": [38, -38, 14, -14],
+    "correctAnswer": 38,
+    "level": "medium"
+  },
+  {
+    "question": "(-17) - 15",
+    "options": [-32, 32, -2, 2],
+    "correctAnswer": -32,
+    "level": "medium"
+  },
+  {
+    "question": "(-13) × 6",
+    "options": [-78, 78, -7, 7],
+    "correctAnswer": -78,
+    "level": "hard"
+  },
+  {
+    "question": "(-7) × (-12)",
+    "options": [84, -84, -19, 19],
+    "correctAnswer": 84,
+    "level": "hard"
+  },
+  {
+    "question": "(-72) ÷ 9",
+    "options": [-8, 8, -63, 63],
+    "correctAnswer": -8,
+    "level": "hard"
+  },
+  {
+    "question": "(-91) ÷ (-13)",
+    "options": [7, -7, -78, 78],
+    "correctAnswer": 7,
+    "level": "hard"
+  },
+  {
+    "question": "(-29) + 41",
+    "options": [12, -12, 70, -70],
+    "correctAnswer": 12,
+    "level": "hard"
+  },
+  {
+    "question": "(-23) - (-16)",
+    "options": [-7, 7, -39, 39],
+    "correctAnswer": -7,
+    "level": "hard"
+  },
+  {
+    "question": "33 - (-19)",
+    "options": [52, -52, 14, -14],
+    "correctAnswer": 52,
+    "level": "hard"
+  },
+  {
+    "question": "(-38) - 24",
+    "options": [-62, 62, -14, 14],
+    "correctAnswer": -62,
+    "level": "hard"
+  },
+  {
+    "question": "(-15) × (-9)",
+    "options": [135, -135, -24, 24],
+    "correctAnswer": 135,
+    "level": "hard"
+  },
+  {
+    "question": "(-96) ÷ 16",
+    "options": [-6, 6, -80, 80],
+    "correctAnswer": -6,
+    "level": "hard"
+  },
+  {
+    "question": "(-4) × 7 + 18",
+    "options": [-10, 10, -46, 46],
+    "correctAnswer": -10,
+    "level": "too hard"
+  },
+  {
+    "question": "22 + (-6) × 4",
+    "options": [-2, 2, 64, -64],
+    "correctAnswer": -2,
+    "level": "too hard"
+  },
+  {
+    "question": "(-8) × 5 - 12",
+    "options": [-52, 52, -28, 28],
+    "correctAnswer": -52,
+    "level": "too hard"
+  },
+  {
+    "question": "35 ÷ (-5) + 9",
+    "options": [2, -2, 16, -16],
+    "correctAnswer": 2,
+    "level": "too hard"
+  },
+  {
+    "question": "(-24) ÷ 4 × 3",
+    "options": [-18, 18, -2, 2],
+    "correctAnswer": -18,
+    "level": "too hard"
+  },
+  {
+    "question": "(-12) + 20 - 15",
+    "options": [-7, 7, 23, -23],
+    "correctAnswer": -7,
+    "level": "too hard"
+  },
+  {
+    "question": "9 × (-4) + 38",
+    "options": [2, -2, 74, -74],
+    "correctAnswer": 2,
+    "level": "too hard"
+  },
+  {
+    "question": "(-54) ÷ (-9) - 3",
+    "options": [3, -3, 9, -9],
+    "correctAnswer": 3,
+    "level": "too hard"
+  },
+  {
+    "question": "(-6) × 8 + 55",
+    "options": [7, -7, 103, -103],
+    "correctAnswer": 7,
+    "level": "too hard"
+  },
+  {
+    "question": "63 ÷ (-7) × 2",
+    "options": [-18, 18, -4.5, 4.5],
+    "correctAnswer": -18,
+    "level": "too hard"
+  },
+  {
+    "question": "(-14) + (-18)",
+    "options": [-32, 32, -4, 4],
+    "correctAnswer": -32,
+    "level": "easy"
+  },
+  {
+    "question": "25 + (-17)",
+    "options": [8, -8, 42, -42],
+    "correctAnswer": 8,
+    "level": "easy"
+  },
+  {
+    "question": "(-22) + 30",
+    "options": [8, -8, 52, -52],
+    "correctAnswer": 8,
+    "level": "easy"
+  },
+  {
+    "question": "16 - 24",
+    "options": [-8, 8, 40, -40],
+    "correctAnswer": -8,
+    "level": "easy"
+  },
+  {
+    "question": "(-19) - 11",
+    "options": [-30, 30, -8, 8],
+    "correctAnswer": -30,
+    "level": "easy"
+  },
+  {
+    "question": "21 - (-14)",
+    "options": [35, -35, 7, -7],
+    "correctAnswer": 35,
+    "level": "easy"
+  },
+  {
+    "question": "(-16) - (-9)",
+    "options": [-7, 7, -25, 25],
+    "correctAnswer": -7,
+    "level": "easy"
+  },
+  {
+    "question": "11 × (-6)",
+    "options": [-66, 66, -5, 5],
+    "correctAnswer": -66,
+    "level": "medium"
+  },
+  {
+    "question": "(-14) × 4",
+    "options": [-56, 56, -10, 10],
+    "correctAnswer": -56,
+    "level": "medium"
+  },
+  {
+    "question": "(-9) × (-7)",
+    "options": [63, -63, -16, 16],
+    "correctAnswer": 63,
+    "level": "medium"
+  },
+  {
+    "question": "40 ÷ (-8)",
+    "options": [-5, 5, -32, 32],
+    "correctAnswer": -5,
+    "level": "medium"
+  },
+  {
+    "question": "(-45) ÷ 9",
+    "options": [-5, 5, -36, 36],
+    "correctAnswer": -5,
+    "level": "medium"
+  },
+  {
+    "question": "(-77) ÷ (-11)",
+    "options": [7, -7, -66, 66],
+    "correctAnswer": 7,
+    "level": "medium"
+  },
+  {
+    "question": "(-31) + 48",
+    "options": [17, -17, 79, -79],
+    "correctAnswer": 17,
+    "level": "medium"
+  },
+  {
+    "question": "39 - (-21)",
+    "options": [60, -60, 18, -18],
+    "correctAnswer": 60,
+    "level": "medium"
+  },
+  {
+    "question": "(-26) - 19",
+    "options": [-45, 45, -7, 7],
+    "correctAnswer": -45,
+    "level": "medium"
+  },
+  {
+    "question": "(-18) × 7",
+    "options": [-126, 126, -11, 11],
+    "correctAnswer": -126,
+    "level": "hard"
+  },
+  {
+    "question": "(-11) × (-13)",
+    "options": [143, -143, -24, 24],
+    "correctAnswer": 143,
+    "level": "hard"
+  },
+  {
+    "question": "(-108) ÷ 12",
+    "options": [-9, 9, -96, 96],
+    "correctAnswer": -9,
+    "level": "hard"
+  },
+  {
+    "question": "(-117) ÷ (-9)",
+    "options": [13, -13, -108, 108],
+    "correctAnswer": 13,
+    "level": "hard"
+  }
+]
+
