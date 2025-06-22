@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Player, Difficulty, Question, Wave } from '../types';
-import { generateWaves, formatTime, calculateRank, playSound, saveToLeaderboard, fetchQuestions } from '../utils/game';
+import { Player, Difficulty, Question, Wave, LeaderboardEntry } from '../types';
+import { generateWaves, formatTime, calculateRank, fetchQuestions } from '../utils/game';
 import QuestionDisplay from './QuestionDisplay';
 import ProgressBar from './ProgressBar';
+import Leaderboard from './Leaderboard';
 
 interface SinglePlayerGameProps {
   player: Player;
   difficulty: Difficulty;
-  onGameOver: (score: number) => void;
+  onGameOver: (score: number, correctAnswers: number, totalQuestions: number, timeTaken: number) => void;
 }
 
 const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty, onGameOver }) => {
@@ -24,6 +25,10 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
   const [gameActive, setGameActive] = useState<boolean>(true);
   const [waveComplete, setWaveComplete] = useState<boolean>(false);
   const [streak, setStreak] = useState<number>(0);
+  const [showLeaderboard, setShowLeaderboard] = useState<boolean>(false);
+  const [correctAnswersCount, setCorrectAnswersCount] = useState<number>(0);
+  const [totalQuestionsAnswered, setTotalQuestionsAnswered] = useState<number>(0);
+  const [startTime, setStartTime] = useState<number>(Date.now());
   
   const initializeGame = useCallback(async () => {
     setIsLoading(true);
@@ -69,6 +74,9 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
     setStreak(0);
     setGameActive(true);
     setWaveComplete(false);
+    setCorrectAnswersCount(0);
+    setTotalQuestionsAnswered(0);
+    setStartTime(Date.now());
     
     const firstWave = newWaves[0];
     if (firstWave && firstWave.questions.length > 0) {
@@ -118,6 +126,7 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
     if (isCorrect) {
       // Calculate points based on time left and difficulty
       let pointsEarned = 10;
+      setCorrectAnswersCount(prev => prev + 1);
       
       // Bonus points for answering quickly
       const timeBonus = Math.floor(timeLeft / 5);
@@ -140,12 +149,10 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
       
       setScore(prev => prev + pointsEarned);
       setAnimationType('correct');
-      playSound('correct');
     } else {
       setLives(prev => prev - 1);
       setStreak(0);
       setAnimationType('incorrect');
-      playSound('wrong');
       
       // Check if game over
       if (lives <= 1) {
@@ -158,6 +165,7 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
     setShowAnimation(true);
     setTimeout(() => {
       setShowAnimation(false);
+      setTotalQuestionsAnswered(prev => prev + 1);
       moveToNextQuestion(isCorrect);
     }, 1000);
   };
@@ -167,7 +175,6 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
     setLives(prev => prev - 1);
     setStreak(0);
     setAnimationType('incorrect');
-    playSound('wrong');
     
     // Check if game over
     if (lives <= 1) {
@@ -179,6 +186,7 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
     setShowAnimation(true);
     setTimeout(() => {
       setShowAnimation(false);
+      setTotalQuestionsAnswered(prev => prev + 1);
       moveToNextQuestion(false);
     }, 1000);
   };
@@ -204,7 +212,6 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
       
       // Move to next wave
       setWaveComplete(true);
-      playSound('levelUp');
       
       setTimeout(() => {
         const nextWave = currentWave + 1;
@@ -225,21 +232,44 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
   // End the game
   const endGame = () => {
     setGameActive(false);
-    playSound('gameOver');
-    
-    // Save score to leaderboard
+
     const rank = calculateRank(score, difficulty);
-    saveToLeaderboard({
+    const newEntry: LeaderboardEntry = {
       playerName: player.name,
       score,
       difficulty,
       date: new Date().toISOString(),
-      rank
-    });
-    
+      rank,
+    };
+
+    const updateLeaderboard = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3001/leaderboards/${difficulty}`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newEntry),
+          }
+        );
+        if (response.ok) {
+          console.log('Leaderboard updated successfully.');
+        } else {
+          console.error('Failed to update leaderboard.');
+        }
+      } catch (error) {
+        console.error('Error updating leaderboard:', error);
+      }
+    };
+
+    updateLeaderboard();
+
     // Delay before showing game over screen
+    const timeTaken = Math.floor((Date.now() - startTime) / 1000);
     setTimeout(() => {
-      onGameOver(score);
+      onGameOver(score, correctAnswersCount, totalQuestionsAnswered, timeTaken);
     }, 2000);
   };
   
@@ -268,85 +298,107 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      {/* Game header */}
-      <div className="bg-white rounded-lg shadow-lg p-4 mb-6">
-        <div className="flex flex-wrap justify-between items-center">
-          <div>
-            <p className="text-sm text-gray-600">Player</p>
-            <p className="text-lg font-bold text-indigo-600">{player.name}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Score</p>
-            <p className="text-lg font-bold">{score}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Lives</p>
-            <p className="text-lg font-bold">{lives}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-sm text-gray-600">Time</p>
-            <p className="text-lg font-bold">{formatTime(timeLeft)}</p>
-          </div>
-          <div className="w-full mt-4">
-            <div className="text-center font-bold text-xl mb-2 text-indigo-600">
-              Wave {currentWave} / {waves.length}
-            </div>
-            <ProgressBar value={calculateProgress()} maxValue={100} />
-          </div>
+    <div className="w-full max-w-4xl mx-auto p-4 relative">
+      <button 
+        onClick={() => setShowLeaderboard(true)}
+        className="absolute top-4 right-4 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded"
+      >
+        View Leaderboard
+      </button>
+
+      {isLoading ? (
+        <div className="text-center py-20">
+          <p className="text-2xl">Loading game...</p>
         </div>
-      </div>
-      
-      {/* Wave complete message */}
-      {waveComplete ? (
-        <div className="bg-blue-100 border-l-4 border-blue-500 p-4 mb-6 rounded-lg">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-blue-700">
-                Wave {currentWave} completed! Preparing next wave...
-              </p>
-            </div>
-          </div>
-        </div>
-      ) : null}
-      
-      {/* Main game area */}
-      <div className="bg-white rounded-lg shadow-lg p-6 relative overflow-hidden">
-        {/* Animation overlay */}
-        {showAnimation && (
-          <div className={`absolute inset-0 flex items-center justify-center z-10 ${
-            animationType === 'correct' ? 'bg-green-100 bg-opacity-80' : 'bg-red-100 bg-opacity-80'
-          }`}>
-            <div className={`text-6xl ${
-              animationType === 'correct' ? 'text-green-600' : 'text-red-600'
-            }`}>
-              {animationType === 'correct' ? '✓' : '✗'}
+      ) : (
+        <div className="container mx-auto px-4 py-8 max-w-4xl">
+          {/* Game header */}
+          <div className="bg-white rounded-lg shadow-lg p-4 mb-6">
+            <div className="flex flex-wrap justify-between items-center">
+              <div>
+                <p className="text-sm text-gray-600">Player</p>
+                <p className="text-lg font-bold text-indigo-600">{player.name}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Score</p>
+                <p className="text-lg font-bold">{score}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Lives</p>
+                <p className="text-lg font-bold">{lives}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-gray-600">Time</p>
+                <p className="text-lg font-bold">{formatTime(timeLeft)}</p>
+              </div>
+              <div className="w-full mt-4">
+                <div className="text-center font-bold text-xl mb-2 text-indigo-600">
+                  Wave {currentWave} / {waves.length}
+                </div>
+                <ProgressBar value={calculateProgress()} maxValue={100} />
+              </div>
             </div>
           </div>
-        )}
-        
-        {/* Question display */}
-        {currentQuestion && (
-          <QuestionDisplay 
-            question={currentQuestion} 
-            onAnswer={handleAnswer}
-            disabled={!gameActive || showAnimation || waveComplete}
-          />
-        )}
-      </div>
-      
-      {/* Streak indicator */}
-      {streak >= 3 && (
-        <div className="mt-4 text-center">
-          <span className="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
-            {streak} Question Streak! 🔥
-          </span>
+          
+          {/* Wave complete message */}
+          {waveComplete ? (
+            <div className="bg-blue-100 border-l-4 border-blue-500 p-4 mb-6 rounded-lg">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-blue-700">
+                    Wave {currentWave} completed! Preparing next wave...
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : null}
+          
+          {/* Main game area */}
+          <div className="bg-white rounded-lg shadow-lg p-6 relative overflow-hidden">
+            {/* Animation overlay */}
+            {showAnimation && (
+              <div className={`absolute inset-0 flex items-center justify-center z-10 ${
+                animationType === 'correct' ? 'bg-green-100 bg-opacity-80' : 'bg-red-100 bg-opacity-80'
+              }`}>
+                <div className={`text-6xl ${
+                  animationType === 'correct' ? 'text-green-600' : 'text-red-600'
+                }`}>
+                  {animationType === 'correct' ? '✓' : '✗'}
+                </div>
+              </div>
+            )}
+            
+            {/* Question display */}
+            {currentQuestion && (
+              <QuestionDisplay 
+                question={currentQuestion} 
+                onAnswer={handleAnswer}
+                disabled={!gameActive || showAnimation || waveComplete}
+              />
+            )}
+          </div>
+          
+          {/* Streak indicator */}
+          {streak >= 3 && (
+            <div className="mt-4 text-center">
+              <span className="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+                {streak} Question Streak! 🔥
+              </span>
+            </div>
+          )}
         </div>
+      )}
+
+      {showLeaderboard && (
+        <Leaderboard 
+          gameMode="single"
+          onClose={() => setShowLeaderboard(false)} 
+        />
       )}
     </div>
   );

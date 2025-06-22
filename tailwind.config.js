@@ -16,6 +16,9 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Cairo', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -66,19 +69,19 @@ module.exports = {
           to: { height: 0 },
         },
         "pulse-attack": {
-          '0%, 100%': { transform: 'scale(1)' },
-          '50%': { transform: 'scale(1.1)', backgroundColor: 'rgba(239, 68, 68, 0.7)' },
+          '0%, 100%': { transform: 'scale(1)', borderColor: 'transparent' },
+          '50%': { transform: 'scale(1.05)', borderColor: 'rgba(239, 68, 68, 0.7)' },
         },
         "pulse-shield": {
-          '0%, 100%': { transform: 'scale(1)' },
-          '50%': { transform: 'scale(1.1)', backgroundColor: 'rgba(59, 130, 246, 0.7)' },
+          '0%, 100%': { transform: 'scale(1)', },
+          '50%': { transform: 'scale(0.95)', },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "pulse-attack": "pulse-attack 0.5s ease-in-out",
-        "pulse-shield": "pulse-shield 0.5s ease-in-out",
+        "pulse-attack": "pulse-attack 1s ease-in-out",
+        "pulse-shield": "pulse-shield 1s ease-in-out",
       },
     },
   },

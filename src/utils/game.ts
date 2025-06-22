@@ -14,6 +14,7 @@ export const fetchQuestions = async (difficulty: Difficulty): Promise<Question[]
       ...q,
       id: `${difficulty}-${index}`,
       difficulty: difficulty,
+      options: shuffleArray([...q.options]),
     }));
   } catch (error) {
     console.error("Could not fetch questions:", error);
@@ -95,49 +96,4 @@ export const generateWaves = (allQuestions: Question[], numWaves: number = 5, qu
   }
   
   return waves;
-};
-
-// Save entry to leaderboard
-export const saveToLeaderboard = (entry: LeaderboardEntry): void => {
-  try {
-    const leaderboard = getLeaderboard();
-    leaderboard.push(entry);
-    
-    leaderboard.sort((a, b) => {
-      if (b.score !== a.score) {
-        return b.score - a.score;
-      }
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    });
-    
-    const top10 = leaderboard.slice(0, 10);
-    
-    localStorage.setItem('leaderboard', JSON.stringify(top10));
-  } catch (error) {
-    console.error("Failed to save to leaderboard:", error);
-  }
-};
-
-// Get leaderboard from local storage
-export const getLeaderboard = (): LeaderboardEntry[] => {
-  try {
-    const data = localStorage.getItem('leaderboard');
-    if (data) {
-      return JSON.parse(data) as LeaderboardEntry[];
-    }
-    return [];
-  } catch (error) {
-    console.error("Failed to get leaderboard:", error);
-    return [];
-  }
-};
-
-// Play a sound effect
-export const playSound = (soundType: string): void => {
-  try {
-    const audio = new Audio(`/integer_invasion/sounds/${soundType}.svg`);
-    audio.play().catch(error => console.error("Sound play failed:", error));
-  } catch (error) {
-    console.error("Could not play sound:", error);
-  }
 };

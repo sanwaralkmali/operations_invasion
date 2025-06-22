@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { GameState, GameMode, Difficulty, Player, LeaderboardEntry } from './types';
-import { getLeaderboard, calculateRank } from './utils/game';
+import { GameState, GameMode, Difficulty, Player } from './types';
+import { calculateRank } from './utils/game';
 import StartScreen from './components/StartScreen';
 import SinglePlayerGame from './components/SinglePlayerGame';
 import BattleMode from './components/BattleMode';
 import GameOver from './components/GameOver';
-import Leaderboard from './components/Leaderboard';
+import LeaderboardWrapper from './components/LeaderboardWrapper';
 import Footer from './components/Footer';
 import NotFound from './components/NotFound';
 
@@ -15,18 +15,12 @@ function App() {
   const [gameMode, setGameMode] = useState<GameMode>('single');
   const [difficulty, setDifficulty] = useState<Difficulty>('integers');
   const [players, setPlayers] = useState<Player[]>([]);
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [finalScore, setFinalScore] = useState<number>(0);
   const [correctAnswers, setCorrectAnswers] = useState<number>(0);
   const [totalQuestions, setTotalQuestions] = useState<number>(0);
   const [timeTaken, setTimeTaken] = useState<number>(0);
   const [winner, setWinner] = useState<string | undefined>(undefined);
   
-  // Load leaderboard on mount
-  useEffect(() => {
-    setLeaderboard(getLeaderboard());
-  }, []);
-
   // Start a new game
   const startGame = (mode: GameMode, diff: Difficulty, playerNames: string[]) => {
     // Create player objects
@@ -42,26 +36,47 @@ function App() {
     setDifficulty(diff);
     setPlayers(newPlayers);
     setGameState('playing');
+    
+    // Update player rank based on score and difficulty
+    const rank = calculateRank(newPlayers[0].score, difficulty);
+    setPlayers(prev => [
+      {...prev[0], score: newPlayers[0].score, rank},
+      ...prev.slice(1)
+    ]);
+  };
+
+  const handleSinglePlayerGameOver = (score: number, correct: number, total: number, time: number) => {
+    endGame(score, { correct, total, time });
+  };
+
+  const handleBattleGameOver = (score: number, winner?: string) => {
+    endGame(score, { winner });
   };
 
   // End the game and show results
-  const endGame = (score: number, correct: number = 0, total: number = 0, time: number = 0, battleWinner?: string) => {
+  const endGame = (score: number, options: { correct?: number; total?: number; time?: number; winner?: string, winnerStats?: any } = {}) => {
+    const { correct = 0, total = 0, time = 0, winner, winnerStats } = options;
     setFinalScore(score);
-    setCorrectAnswers(correct);
-    setTotalQuestions(total);
+    if (winnerStats) {
+      setCorrectAnswers(winnerStats.correctAnswers);
+      setTotalQuestions(winnerStats.questionsAnswered);
+    } else {
+      setCorrectAnswers(correct);
+      setTotalQuestions(total);
+    }
     setTimeTaken(time);
-    setWinner(battleWinner);
+    setWinner(winner);
     setGameState('gameOver');
     
     // Update player rank based on score and difficulty
     const rank = calculateRank(score, difficulty);
-    setPlayers(prev => [
-      {...prev[0], score, rank},
-      ...prev.slice(1)
-    ]);
-    
-    // Refresh leaderboard
-    setLeaderboard(getLeaderboard());
+    setPlayers(prev => {
+      if (prev.length === 0) return [];
+      return [
+        {...prev[0], score, rank},
+        ...prev.slice(1)
+      ];
+    });
   };
 
   // Return to start screen
@@ -78,20 +93,27 @@ function App() {
               gameState === 'start' ? (
                 <StartScreen 
                   onStartGame={startGame} 
-                  leaderboard={leaderboard}
                 />
               ) : gameState === 'playing' ? (
                 gameMode === 'single' ? (
                   <SinglePlayerGame 
                     player={players[0]}
                     difficulty={difficulty}
-                    onGameOver={endGame}
+                    onGameOver={(score, correct, total, time) =>
+                      endGame(score, {
+                        correct,
+                        total,
+                        time,
+                      })
+                    }
                   />
                 ) : (
                   <BattleMode 
                     players={players}
                     difficulty={difficulty}
-                    onGameOver={endGame}
+                    onGameOver={(score, winner, stats) =>
+                      endGame(score, { winner, winnerStats: stats })
+                    }
                   />
                 )
               ) : (
@@ -113,7 +135,10 @@ function App() {
                 />
               )
             } />
-            <Route path="/leaderboard" element={<Leaderboard entries={leaderboard} onClose={() => window.history.back()} />} />
+            <Route 
+              path="/leaderboard" 
+              element={<LeaderboardWrapper />} 
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

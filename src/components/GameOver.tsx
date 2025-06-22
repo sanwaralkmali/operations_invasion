@@ -37,7 +37,6 @@ const GameOver: React.FC<GameOverProps> = ({
       case 'bronze': return 'text-amber-700';
       case 'silver': return 'text-gray-400';
       case 'gold': return 'text-yellow-500';
-      case 'platinum': return 'text-cyan-400';
       default: return '';
     }
   };
@@ -76,7 +75,7 @@ const GameOver: React.FC<GameOverProps> = ({
         
         <div className="flex justify-between mb-2">
           <span className="font-medium">Correct Answers:</span>
-          <span>{correctAnswers} / {totalQuestions}</span>
+          <span>{correctAnswers} / {totalQuestions + 1}</span>
         </div>
         
         <div className="flex justify-between mb-2">
@@ -84,21 +83,25 @@ const GameOver: React.FC<GameOverProps> = ({
           <span>{accuracy}%</span>
         </div>
         
-        <div className="flex justify-between mb-2">
-          <span className="font-medium">Time:</span>
-          <span>{formatTime(timeTaken)}</span>
-        </div>
+        {gameMode === 'single' && (
+          <>
+            <div className="flex justify-between mb-2">
+              <span className="font-medium">Time:</span>
+              <span>{formatTime(timeTaken)}</span>
+            </div>
+            
+            <div className="flex justify-between mb-2">
+              <span className="font-medium">Rank:</span>
+              <span className={`font-bold ${getRankClass(rank)}`}>
+                {rank.charAt(0).toUpperCase() + rank.slice(1)}
+              </span>
+            </div>
+          </>
+        )}
         
         <div className="flex justify-between mb-2">
           <span className="font-medium">Difficulty:</span>
           <span>{getDifficultyLabel(difficulty)}</span>
-        </div>
-        
-        <div className="flex justify-between mb-2">
-          <span className="font-medium">Rank:</span>
-          <span className={`font-bold ${getRankClass(rank)}`}>
-            {rank.charAt(0).toUpperCase() + rank.slice(1)}
-          </span>
         </div>
       </div>
       

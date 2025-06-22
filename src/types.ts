@@ -11,7 +11,7 @@ export interface Player {
   name: string;
   score: number;
   lives: number;
-  rank: Rank;
+  rank?: Rank;
 }
 
 // Question types
@@ -38,7 +38,7 @@ export interface LeaderboardEntry {
   score: number;
   difficulty: Difficulty;
   date: string;
-  rank: Rank;
+  rank?: Rank;
 }
 
 // Wave information for single player mode
