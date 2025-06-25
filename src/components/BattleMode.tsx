@@ -382,6 +382,22 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
     </div>
   );
 
+  // Prepare feedback message for in-card display
+  const feedbackMessage = feedback ? (
+    <div className={`text-center font-bold text-xs sm:text-lg min-h-[1.2rem] sm:min-h-[2.5rem] ${
+      feedback.status === 'correct' ? 'text-green-600' :
+      feedback.status === 'incorrect' ? 'text-red-600' :
+      feedback.status === 'showing_correct_answer' ? 'text-green-600' :
+      ''
+    }`}>
+      {feedback.status === 'correct' && 'Correct! 🎉'}
+      {feedback.status === 'incorrect' && 'Incorrect!'}
+      {feedback.status === 'showing_correct_answer' && (
+        <>The correct answer is <span className="font-bold">{feedback.correctAnswer}</span>.</>
+      )}
+    </div>
+  ) : null;
+
   if (showPostGameSummary) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-4xl text-white text-center">
@@ -448,33 +464,33 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 items-center justify-center w-full bg-gray-50 dark:bg-gray-900 p-4 relative">
+    <div className="flex-1 flex flex-col min-h-0 items-center justify-center w-full max-w-full bg-gray-50 dark:bg-gray-900 p-0 sm:p-4 relative">
       <button
         onClick={() => navigate('/')}
         title="Exit to Main Menu"
-        className="absolute top-4 right-4 bg-gray-200 hover:bg-red-500 text-gray-700 hover:text-white rounded-full p-2 shadow transition-colors z-20"
+        className="absolute top-3 right-3 bg-gray-200 hover:bg-red-500 text-gray-700 hover:text-white rounded-full p-1.5 shadow transition-colors z-20"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
 
       {/* Player Info Row */}
-      <div className="flex w-full justify-between items-center mb-6 gap-4 relative">
+      <div className="flex flex-row w-full justify-between items-center mb-2 sm:mb-6 gap-1 sm:gap-4 relative">
         {battlePlayers.map((player, index) => (
           <div
             key={player.id}
-            className={`flex-1 flex flex-col items-center p-3 rounded-lg transition-all duration-300
+            className={`flex-1 flex flex-col items-center p-1 sm:p-3 rounded-lg transition-all duration-300
               ${index === currentPlayerIndex && gameActive ? 'bg-blue-50 dark:bg-blue-900 shadow-lg scale-105 border-2 border-blue-400' : 'bg-gray-100 dark:bg-gray-800 opacity-60'}
               ${hitPlayerIndex === index ? 'animate-hit' : ''}
             `}
-            style={{ minWidth: 0 }}
+            style={{ minWidth: 0, maxWidth: '100%' }}
           >
-            <div className={`text-lg font-bold ${index === currentPlayerIndex ? 'text-blue-700 dark:text-blue-200' : 'text-gray-500 dark:text-gray-400'}`}>{player.name}</div>
-            <div className="text-lg my-1">
-              {'❤️'.repeat(player.lives) + '♡'.repeat(Math.max(0, 3 - player.lives))}
+            <div className={`text-xs sm:text-lg font-bold ${index === currentPlayerIndex ? 'text-blue-700 dark:text-blue-200' : 'text-gray-500 dark:text-gray-400'}`}>{player.name}</div>
+            <div className="text-sm sm:text-lg my-1">
+              <span className="inline-block" style={{ fontSize: '1em' }}>{'❤️'.repeat(player.lives) + '♡'.repeat(Math.max(0, 3 - player.lives))}</span>
             </div>
-            <div className="text-base text-gray-700 dark:text-gray-300 font-semibold">Score: {player.score}</div>
+            <div className="text-xs sm:text-base text-gray-700 dark:text-gray-300 font-semibold">Score: {player.score}</div>
           </div>
         ))}
         {/* Projectile animation */}
@@ -491,11 +507,11 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
                   ? 'translateY(-50%) translateX(0)' // start left
                   : 'translateY(-50%) translateX(-100%)', // start right
                 animation: projectile.from === 0
-                  ? 'projectile-move-right 1.1s forwards'
-                  : 'projectile-move-left 1.1s forwards',
+                  ? 'projectile-move-right 1.5s forwards'
+                  : 'projectile-move-left 1.5s forwards',
               }}
             >
-              🗡️
+              🔥
             </span>
           </div>
         )}
@@ -503,9 +519,9 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
 
       {/* Main Question Area */}
       <div className="w-full flex flex-col items-center">
-        <div className="w-full bg-white dark:bg-gray-900 rounded-xl shadow-xl p-6 mb-4 flex flex-col items-center">
-          <div className="mb-2 text-center">
-            <span className="text-xl font-bold text-indigo-700 dark:text-indigo-300">
+        <div className="w-full bg-white dark:bg-gray-900 rounded-xl shadow-xl p-1 sm:p-6 mb-1 sm:mb-4 flex flex-col items-center">
+          <div className="mb-1 sm:mb-2 text-center">
+            <span className="text-sm sm:text-xl font-bold text-indigo-700 dark:text-indigo-300">
               {battlePhase === 'suddenDeath' ? 'SUDDEN DEATH' : `${battlePlayers[currentPlayerIndex]?.name}'s turn`}
             </span>
             <ProgressBar value={timeLeft} maxValue={30} />
@@ -516,31 +532,15 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
               onAnswer={handleAnswer}
               disabled={!gameActive || showAnimation !== null || answered || !!feedback}
               feedback={feedback || { status: null }}
+              feedbackMessage={feedbackMessage}
             />
           ) : (
-            <div className="text-center text-lg text-gray-500">No question available.</div>
+            <div className="text-center text-xs sm:text-lg text-gray-500">No question available.</div>
           )}
         </div>
       </div>
 
-      {/* Feedback message */}
-      {feedback && (
-        <div className="w-full flex justify-center mt-2">
-          <div className={`text-center px-4 py-3 rounded-lg font-bold text-lg min-h-[2.5rem] ${
-            feedback.status === 'correct' ? 'text-green-600' :
-            feedback.status === 'incorrect' ? 'text-red-600' :
-            feedback.status === 'showing_correct_answer' ? 'text-green-600' :
-            ''
-          }`}
-          >
-            {feedback.status === 'correct' && 'Correct! 🎉'}
-            {feedback.status === 'incorrect' && 'Incorrect!'}
-            {feedback.status === 'showing_correct_answer' && (
-              <>The correct answer is <span className="font-bold">{feedback.correctAnswer}</span>.</>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Feedback is now shown inside the card via feedbackMessage */}
 
       {isLoading && (
         <div className="text-center mt-8">

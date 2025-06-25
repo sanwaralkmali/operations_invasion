@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import { Question } from '../types';
 
 interface QuestionDisplayProps {
@@ -10,9 +10,11 @@ interface QuestionDisplayProps {
     correctAnswer?: number | string;
     selectedAnswer?: number | string | null;
   };
+  hideFeedbackMessage?: boolean;
+  feedbackMessage?: ReactNode;
 }
 
-const QuestionDisplay: React.FC<QuestionDisplayProps> = ({ question, onAnswer, disabled = false, feedback }) => {
+const QuestionDisplay: React.FC<QuestionDisplayProps> = ({ question, onAnswer, disabled = false, feedback, hideFeedbackMessage = false, feedbackMessage }) => {
   const [typedAnswer, setTypedAnswer] = useState<string>('');
   const [showOptions, setShowOptions] = useState<boolean>(true);
 
@@ -123,18 +125,24 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({ question, onAnswer, d
         </form>
       )}
       
-      {/* Feedback message */}
-      <div className="mt-6 text-center text-lg font-semibold min-h-[28px]">
-        {feedback.status === 'correct' && (
-            <span className="text-green-600">Correct! 🎉</span>
-        )}
-        {feedback.status === 'incorrect' && (
-            <span className="text-red-600">Incorrect!</span>
-        )}
-        {feedback.status === 'showing_correct_answer' && (
-            <span className="text-green-600">The correct answer is <span className="font-bold">{feedback.correctAnswer}</span>.</span>
-        )}
-      </div>
+      {/* Feedback message (custom or default) */}
+      {!hideFeedbackMessage && (
+        feedbackMessage ? (
+          <div className="mt-6">{feedbackMessage}</div>
+        ) : (
+          <div className="mt-6 text-center text-lg font-semibold min-h-[28px]">
+            {feedback.status === 'correct' && (
+                <span className="text-green-600">Correct! 🎉</span>
+            )}
+            {feedback.status === 'incorrect' && (
+                <span className="text-red-600">Incorrect!</span>
+            )}
+            {feedback.status === 'showing_correct_answer' && (
+                <span className="text-green-600">The correct answer is <span className="font-bold">{feedback.correctAnswer}</span>.</span>
+            )}
+          </div>
+        )
+      )}
     </div>
   );
 };
