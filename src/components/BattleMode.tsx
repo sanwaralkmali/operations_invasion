@@ -3,6 +3,7 @@ import { Player, Difficulty, Question } from '../types';
 import { fetchQuestions, shuffleArray } from '../utils/game';
 import QuestionDisplay from './QuestionDisplay';
 import ProgressBar from './ProgressBar';
+import { useNavigate } from 'react-router-dom';
 
 type BattlePhase = 'regular' | 'lastChance' | 'suddenDeath';
 type StatusMessageType = 'info' | 'success' | 'warning' | 'error' | 'special';
@@ -44,6 +45,8 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
   const [answered, setAnswered] = useState(false);
   const [turnComplete, setTurnComplete] = useState(false);
   const [suddenDeathResolved, setSuddenDeathResolved] = useState(false);
+
+  const navigate = useNavigate();
 
   const initializeGame = useCallback(() => {
     fetchQuestions(difficulty).then(allQuestions => {
@@ -405,6 +408,15 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl relative">
+      <button
+        onClick={() => navigate('/')}
+        title="Exit to Main Menu"
+        className="absolute top-4 right-4 bg-gray-200 hover:bg-red-500 text-gray-700 hover:text-white rounded-full p-2 shadow transition-colors z-20"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
       <div className="flex justify-around mb-4 text-center">
         {battlePlayers.map((player, index) => (
           <div key={player.id} className={`p-4 rounded-lg w-2/5 transition-all duration-300 ${index === currentPlayerIndex && gameActive ? 'bg-blue-900 shadow-lg scale-105' : 'bg-gray-700'}`}>
@@ -434,6 +446,7 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
               question={currentQuestionData}
               onAnswer={handleAnswer}
               disabled={!gameActive || showAnimation !== null || answered}
+              feedback={{ status: null }}
             />
           </div>
           {statusDisplay}

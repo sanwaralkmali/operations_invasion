@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { GameMode, Difficulty } from '../types';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Instructions from './Instructions';
 
 interface StartScreenProps {
@@ -14,6 +14,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ onStartGame }) => {
   const [player2Name, setPlayer2Name] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [showInstructions, setShowInstructions] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleStartGame = () => {
     // Clear any previous error messages
@@ -21,6 +22,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ onStartGame }) => {
     
     if (mode === 'single' && player1Name.trim()) {
       onStartGame(mode, difficulty, [player1Name]);
+      navigate('/game');
     } else if (mode === 'battle' && player1Name.trim() && player2Name.trim()) {
       // Check for duplicate names in battle mode
       if (player1Name.trim().toLowerCase() === player2Name.trim().toLowerCase()) {
@@ -28,6 +30,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ onStartGame }) => {
         return;
       }
       onStartGame(mode, difficulty, [player1Name, player2Name]);
+      navigate('/battle');
     }
   };
 

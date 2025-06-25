@@ -4,6 +4,7 @@ import { generateWaves, formatTime, fetchQuestions } from '../utils/game';
 import QuestionDisplay from './QuestionDisplay';
 import ProgressBar from './ProgressBar';
 import Leaderboard from './Leaderboard';
+import { useNavigate } from 'react-router-dom';
 
 interface SinglePlayerGameProps {
   player: Player;
@@ -33,6 +34,7 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
   const [totalQuestionsAnswered, setTotalQuestionsAnswered] = useState<number>(0);
   const [startTime, setStartTime] = useState<number>(Date.now());
   const [lastAnswered, setLastAnswered] = useState<null | { isCorrect: boolean; correctAnswer: number | string; selectedAnswer: number | string | null }>(null);
+  const navigate = useNavigate();
   
   const initializeGame = useCallback(async () => {
     setIsLoading(true);
@@ -276,12 +278,15 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4 relative">
-      {/* <button 
-        onClick={() => setShowLeaderboard(true)}
-        className="absolute top-4 right-4 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded"
+      <button
+        onClick={() => navigate('/')}
+        title="Exit to Main Menu"
+        className="absolute top-4 right-4 bg-gray-200 hover:bg-red-500 text-gray-700 hover:text-white rounded-full p-2 shadow transition-colors z-20"
       >
-        View Leaderboard
-      </button> */}
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
 
       {isLoading ? (
         <div className="text-center py-20">
