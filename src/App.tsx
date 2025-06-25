@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { GameState, GameMode, Difficulty, Player } from './types';
 import { calculateRank } from './utils/game';
 import StartScreen from './components/StartScreen';
@@ -20,6 +20,7 @@ function App() {
   const [totalQuestions, setTotalQuestions] = useState<number>(0);
   const [timeTaken, setTimeTaken] = useState<number>(0);
   const [winner, setWinner] = useState<string | undefined>(undefined);
+  const navigate = useNavigate();
   
   // Start a new game
   const startGame = (mode: GameMode, diff: Difficulty, playerNames: string[]) => {
@@ -71,87 +72,99 @@ function App() {
     });
   };
 
+  useEffect(() => {
+    if (gameState === 'gameOver') {
+      navigate('/gameover');
+    }
+  }, [gameState, navigate]);
+
   // Return to start screen
   const returnToStart = () => {
     setGameState('start');
   };
 
   return (
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={
+            <StartScreen onStartGame={startGame} />
+          } />
+          <Route path="/game" element={
+            gameState === 'playing' && gameMode === 'single' && players.length > 0 ?
+              <main className="container mx-auto p-4">
+                <SinglePlayerGame 
+                  player={players[0]}
+                  difficulty={difficulty}
+                  onGameOver={(score, correct, total, time) =>
+                    endGame(score, {
+                      correct,
+                      total,
+                      time,
+                    })
+                  }
+                />
+              </main> :
+              <Navigate to="/" />
+          } />
+          <Route path="/battle" element={
+            gameState === 'playing' && gameMode === 'battle' && players.length === 2 ?
+              <main className="container mx-auto p-4">
+                <BattleMode 
+                  players={players}
+                  difficulty={difficulty}
+                  onGameOver={(score, winner, stats) =>
+                    endGame(score, { winner, winnerStats: stats })
+                  }
+                />
+              </main> :
+              <Navigate to="/" />
+          } />
+          <Route path="/gameover" element={
+            gameState === 'gameOver' ?
+              <main className="container mx-auto p-4 flex items-center justify-center min-h-screen">
+                <GameOver 
+                  playerName={players[0]?.name || 'Player'}
+                  score={finalScore}
+                  correctAnswers={correctAnswers}
+                  totalQuestions={totalQuestions}
+                  timeTaken={timeTaken}
+                  rank={players[0]?.rank || 'bronze'}
+                  difficulty={difficulty}
+                  gameMode={gameMode}
+                  winner={winner}
+                  onRestart={() => {
+                    // Reset game state but keep same players and difficulty
+                    setGameState('playing');
+                  }}
+                  onMainMenu={returnToStart}
+                />
+              </main> :
+              <Navigate to="/" />
+          } />
+          <Route path="/leaderboard" element={
+            <main className="container mx-auto p-4">
+              <LeaderboardWrapper />
+            </main>
+          } />
+          <Route path="*" element={
+            <main className="container mx-auto p-4">
+              <NotFound />
+            </main>
+          } />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+function AppWithRouter() {
+  return (
     <BrowserRouter basename="/operations_invasion">
-      <div className="min-h-screen flex flex-col bg-gray-50">
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={
-              <StartScreen onStartGame={startGame} />
-            } />
-            <Route path="/game" element={
-              gameState === 'playing' && gameMode === 'single' && players.length > 0 ?
-                <main className="container mx-auto p-4">
-                  <SinglePlayerGame 
-                    player={players[0]}
-                    difficulty={difficulty}
-                    onGameOver={(score, correct, total, time) =>
-                      endGame(score, {
-                        correct,
-                        total,
-                        time,
-                      })
-                    }
-                  />
-                </main> :
-                <Navigate to="/" />
-            } />
-            <Route path="/battle" element={
-              gameState === 'playing' && gameMode === 'battle' && players.length === 2 ?
-                <main className="container mx-auto p-4">
-                  <BattleMode 
-                    players={players}
-                    difficulty={difficulty}
-                    onGameOver={(score, winner, stats) =>
-                      endGame(score, { winner, winnerStats: stats })
-                    }
-                  />
-                </main> :
-                <Navigate to="/" />
-            } />
-            <Route path="/gameover" element={
-              gameState === 'gameOver' ?
-                <main className="container mx-auto p-4 flex items-center justify-center min-h-screen">
-                  <GameOver 
-                    playerName={players[0]?.name || 'Player'}
-                    score={finalScore}
-                    correctAnswers={correctAnswers}
-                    totalQuestions={totalQuestions}
-                    timeTaken={timeTaken}
-                    rank={players[0]?.rank || 'bronze'}
-                    difficulty={difficulty}
-                    gameMode={gameMode}
-                    winner={winner}
-                    onRestart={() => {
-                      // Reset game state but keep same players and difficulty
-                      setGameState('playing');
-                    }}
-                    onMainMenu={returnToStart}
-                  />
-                </main> :
-                <Navigate to="/" />
-            } />
-            <Route path="/leaderboard" element={
-              <main className="container mx-auto p-4">
-                <LeaderboardWrapper />
-              </main>
-            } />
-            <Route path="*" element={
-              <main className="container mx-auto p-4">
-                <NotFound />
-              </main>
-            } />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      <App />
     </BrowserRouter>
   );
 }
 
-export default App;
+export default AppWithRouter;

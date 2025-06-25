@@ -295,7 +295,7 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
         const finalPlayerStates = finalPlayersWithBonus;
 
         setTimeout(() => {
-            setStatusMessage({ text: `${finalWinner.name} is the victor!`, type: 'special' });
+            setStatusMessage({ text: `${finalWinner.name} is the winner!`, type: 'special' });
             setTimeout(() => showSummary(finalWinner, finalPlayerStates), 1500);
         }, 1500);
 
@@ -305,7 +305,7 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
           winner = finalPlayers.reduce((a, b) => a.score > b.score ? a : b);
         }
         const finalWinner = winner;
-        setStatusMessage({ text: `${finalWinner.name} is the victor!`, type: 'special' });
+        setStatusMessage({ text: `${finalWinner.name} is the winner!`, type: 'special' });
         setTimeout(() => showSummary(finalWinner, finalPlayers), 1500);
     }
   };
@@ -400,27 +400,24 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
 
   if (showPostGameSummary) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-4xl text-white text-center">
-        <h1 className="text-5xl font-bold mb-4">Battle Over!</h1>
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-4xl text-white text-center">
+        <h1 className="text-2xl sm:text-5xl font-bold mb-2 sm:mb-4">Battle Over!</h1>
         {statusDisplay}
-        
-        <div className="flex justify-around my-8">
+        <div className="flex flex-col xs:flex-row justify-center items-center gap-2 sm:gap-8 my-4 sm:my-8 w-full">
           {battlePlayers.map(player => (
-            <div key={player.id} className="p-6 rounded-lg w-2/5 bg-gray-800 shadow-lg">
-              <h2 className="text-3xl font-bold text-white mb-4">{player.name}</h2>
-              <p className="text-2xl text-green-400">Final Score: {player.score}</p>
+            <div key={player.id} className="p-2 sm:p-6 rounded-lg w-full xs:w-1/2 sm:w-2/5 bg-gray-800 shadow-lg mb-2 xs:mb-0">
+              <h2 className="text-lg sm:text-3xl font-bold text-white mb-2 sm:mb-4">{player.name}</h2>
+              <p className="text-base sm:text-2xl text-green-400">Final Score: {player.score}</p>
             </div>
           ))}
         </div>
-
         <div className='w-full max-w-md mx-auto'>
-            <p className="mb-2">Proceeding in {summaryTimeLeft}s...</p>
+            <p className="mb-1 sm:mb-2 text-sm sm:text-base">Proceeding in {summaryTimeLeft}s...</p>
             <ProgressBar value={15 - summaryTimeLeft} maxValue={15} />
         </div>
-        
         <button 
             onClick={handleProceedToGameOver} 
-            className="mt-6 bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 px-6 rounded-lg text-xl transition-transform transform hover:scale-105"
+            className="mt-4 sm:mt-6 bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg text-base sm:text-xl transition-transform transform hover:scale-105"
         >
           Continue to Score Screen
         </button>
@@ -430,23 +427,21 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
 
   if (showSuddenDeathIntro) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-4xl text-white text-center">
-        <h1 className="text-6xl font-bold text-cyan-400 animate-pulse mb-4">SUDDEN DEATH</h1>
-        <p className="text-xl mb-8">The score is tied or time is up! One final question decides the winner. Fastest correct answer gets a bonus!</p>
-        
-        <div className="flex justify-around mb-8">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 max-w-4xl text-white text-center">
+        <h1 className="text-2xl sm:text-6xl font-bold text-cyan-400 animate-pulse mb-2 sm:mb-4">SUDDEN DEATH</h1>
+        <p className="text-sm sm:text-xl mb-4 sm:mb-8">The score is tied or time is up! One final question decides the winner. Fastest correct answer gets a bonus!</p>
+        <div className="flex flex-col xs:flex-row justify-center items-center gap-2 sm:gap-8 mb-4 sm:mb-8 w-full">
           {battlePlayers.map(player => (
-            <div key={player.id} className="p-6 rounded-lg w-2/5 bg-gray-800 shadow-lg">
-              <h2 className="text-3xl font-bold text-white mb-4">{player.name}</h2>
-              <p className="text-2xl text-green-400">Score: {player.score}</p>
-              <div className="mt-4 text-lg text-left">
+            <div key={player.id} className="p-2 sm:p-6 rounded-lg w-full xs:w-1/2 sm:w-2/5 bg-gray-800 shadow-lg mb-2 xs:mb-0">
+              <h2 className="text-lg sm:text-3xl font-bold text-white mb-2 sm:mb-4">{player.name}</h2>
+              <p className="text-base sm:text-2xl text-green-400">Score: {player.score}</p>
+              <div className="mt-2 sm:mt-4 text-xs sm:text-lg text-left">
                 <p>Correct Answers: {player.correctAnswers}</p>
                 <p>Incorrect Answers: {player.questionsAnswered - player.correctAnswers}</p>
               </div>
             </div>
           ))}
         </div>
-
         <button 
           onClick={() => {
             setShowSuddenDeathIntro(false);
@@ -455,7 +450,7 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
             startTurn();
             setStatusMessage({ text: `Final question! It's your turn, ${battlePlayers[0].name}!`, type: 'special'});
           }}
-          className="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-4 px-8 rounded-lg text-2xl transition-transform transform hover:scale-105"
+          className="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 sm:py-4 px-4 sm:px-8 rounded-lg text-base sm:text-2xl transition-transform transform hover:scale-105"
         >
           Begin Final Round!
         </button>

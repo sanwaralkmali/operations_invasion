@@ -277,13 +277,13 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 relative">
+    <div className="w-full max-w-screen-sm sm:max-w-4xl mx-auto p-1 sm:p-4 relative">
       <button
         onClick={() => navigate('/')}
         title="Exit to Main Menu"
-        className="absolute top-4 right-4 bg-gray-200 hover:bg-red-500 text-gray-700 hover:text-white rounded-full p-2 shadow transition-colors z-20"
+        className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-gray-200 hover:bg-red-500 text-gray-700 hover:text-white rounded-full p-1.5 sm:p-2 shadow transition-colors z-20"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
@@ -293,28 +293,28 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
           <p className="text-2xl">Loading game...</p>
         </div>
       ) : (
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <div className="container mx-auto px-1 sm:px-4 py-4 sm:py-8 max-w-screen-sm sm:max-w-4xl">
           {/* Game header */}
-          <div className="bg-white rounded-lg shadow-lg p-4 mb-6">
-            <div className="flex flex-wrap justify-between items-center">
-              <div>
-                <p className="text-sm text-gray-600">Player</p>
-                <p className="text-lg font-bold text-indigo-600">{player.name}</p>
+          <div className="bg-white rounded-lg shadow-lg p-2 sm:p-4 mb-4 sm:mb-6">
+            <div className="flex flex-row flex-wrap justify-between items-center gap-2 sm:gap-0">
+              <div className="text-left flex-1 min-w-[70px]">
+                <p className="text-xs sm:text-sm text-gray-600">Player</p>
+                <p className="text-base sm:text-lg font-bold text-indigo-600">{player.name}</p>
               </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-600">Score</p>
-                <p className="text-lg font-bold">{score}</p>
+              <div className="text-center flex-1 min-w-[70px]">
+                <p className="text-xs sm:text-sm text-gray-600">Score</p>
+                <p className="text-base sm:text-lg font-bold">{score}</p>
               </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-600">Lives</p>
-                <p className="text-lg font-bold">{lives}</p>
+              <div className="text-center flex-1 min-w-[70px]">
+                <p className="text-xs sm:text-sm text-gray-600">Lives</p>
+                <p className="text-base sm:text-lg font-bold">{lives}</p>
               </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-600">Time</p>
-                <p className="text-lg font-bold">{formatTime(timeLeft)}</p>
+              <div className="text-right flex-1 min-w-[70px]">
+                <p className="text-xs sm:text-sm text-gray-600">Time</p>
+                <p className="text-base sm:text-lg font-bold">{formatTime(timeLeft)}</p>
               </div>
-              <div className="w-full mt-4">
-                <div className="text-center font-bold text-xl mb-2 text-indigo-600">
+              <div className="w-full mt-2 sm:mt-4 col-span-4">
+                <div className="text-center font-bold text-base sm:text-xl mb-1 sm:mb-2 text-indigo-600">
                   Wave {currentWave} / {waves.length}
                 </div>
                 <ProgressBar value={calculateProgress()} maxValue={100} />
@@ -341,7 +341,7 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
           ) : null}
           
           {/* Main game area */}
-          <div className="bg-white rounded-lg shadow-lg p-6 relative overflow-hidden">
+          <div className="bg-white rounded-lg shadow-lg p-2 sm:p-6 relative overflow-hidden">
             
             {/* Question display */}
             {currentQuestion && (
@@ -356,8 +356,8 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
           
           {/* Streak indicator */}
           {streak >= 3 && (
-            <div className="mt-4 text-center">
-              <span className="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+            <div className="mt-2 sm:mt-4 text-center">
+              <span className="inline-block px-2 sm:px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs sm:text-sm font-medium">
                 {streak} Question Streak! 🔥
               </span>
             </div>
