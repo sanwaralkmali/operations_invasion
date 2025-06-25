@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { GameState, GameMode, Difficulty, Player } from './types';
 import { calculateRank } from './utils/game';
 import StartScreen from './components/StartScreen';
@@ -82,12 +82,11 @@ function App() {
         <main className="flex-1">
           <Routes>
             <Route path="/" element={
-              gameState === 'start' ? (
-                <StartScreen 
-                  onStartGame={startGame} 
-                />
-              ) : gameState === 'playing' ? (
-                gameMode === 'single' ? (
+              <StartScreen onStartGame={startGame} />
+            } />
+            <Route path="/game" element={
+              gameState === 'playing' && gameMode === 'single' && players.length > 0 ?
+                <main className="container mx-auto p-4">
                   <SinglePlayerGame 
                     player={players[0]}
                     difficulty={difficulty}
@@ -99,7 +98,12 @@ function App() {
                       })
                     }
                   />
-                ) : (
+                </main> :
+                <Navigate to="/" />
+            } />
+            <Route path="/battle" element={
+              gameState === 'playing' && gameMode === 'battle' && players.length === 2 ?
+                <main className="container mx-auto p-4">
                   <BattleMode 
                     players={players}
                     difficulty={difficulty}
@@ -107,31 +111,41 @@ function App() {
                       endGame(score, { winner, winnerStats: stats })
                     }
                   />
-                )
-              ) : (
-                <GameOver 
-                  playerName={players[0]?.name || 'Player'}
-                  score={finalScore}
-                  correctAnswers={correctAnswers}
-                  totalQuestions={totalQuestions}
-                  timeTaken={timeTaken}
-                  rank={players[0]?.rank || 'bronze'}
-                  difficulty={difficulty}
-                  gameMode={gameMode}
-                  winner={winner}
-                  onRestart={() => {
-                    // Reset game state but keep same players and difficulty
-                    setGameState('playing');
-                  }}
-                  onMainMenu={returnToStart}
-                />
-              )
+                </main> :
+                <Navigate to="/" />
             } />
-            <Route 
-              path="/leaderboard" 
-              element={<LeaderboardWrapper />} 
-            />
-            <Route path="*" element={<NotFound />} />
+            <Route path="/gameover" element={
+              gameState === 'gameOver' ?
+                <main className="container mx-auto p-4 flex items-center justify-center min-h-screen">
+                  <GameOver 
+                    playerName={players[0]?.name || 'Player'}
+                    score={finalScore}
+                    correctAnswers={correctAnswers}
+                    totalQuestions={totalQuestions}
+                    timeTaken={timeTaken}
+                    rank={players[0]?.rank || 'bronze'}
+                    difficulty={difficulty}
+                    gameMode={gameMode}
+                    winner={winner}
+                    onRestart={() => {
+                      // Reset game state but keep same players and difficulty
+                      setGameState('playing');
+                    }}
+                    onMainMenu={returnToStart}
+                  />
+                </main> :
+                <Navigate to="/" />
+            } />
+            <Route path="/leaderboard" element={
+              <main className="container mx-auto p-4">
+                <LeaderboardWrapper />
+              </main>
+            } />
+            <Route path="*" element={
+              <main className="container mx-auto p-4">
+                <NotFound />
+              </main>
+            } />
           </Routes>
         </main>
         <Footer />

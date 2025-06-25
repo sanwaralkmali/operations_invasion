@@ -1,21 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Question } from '../types';
 
 interface QuestionDisplayProps {
   question: Question;
   onAnswer: (answer: number | string) => void;
   disabled?: boolean;
+  feedback: {
+    status: 'correct' | 'incorrect' | 'showing_correct_answer' | null;
+    correctAnswer?: number | string;
+    selectedAnswer?: number | string | null;
+  };
 }
 
-const QuestionDisplay: React.FC<QuestionDisplayProps> = ({ question, onAnswer, disabled = false }) => {
-  const [selectedOption, setSelectedOption] = useState<number | string | null>(null);
+const QuestionDisplay: React.FC<QuestionDisplayProps> = ({ question, onAnswer, disabled = false, feedback }) => {
   const [typedAnswer, setTypedAnswer] = useState<string>('');
   const [showOptions, setShowOptions] = useState<boolean>(true);
+
+  // Reset input when question changes
+  useEffect(() => {
+    setTypedAnswer('');
+  }, [question]);
   
   const handleOptionClick = (option: number | string) => {
     if (disabled) return;
-    
-    setSelectedOption(option);
     onAnswer(option);
   };
   
@@ -30,11 +37,37 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({ question, onAnswer, d
   };
   
   const toggleAnswerMode = () => {
+    if (disabled) return;
     setShowOptions(!showOptions);
     setTypedAnswer('');
-    setSelectedOption(null);
   };
   
+  const getOptionClass = (option: number | string) => {
+    const { status, selectedAnswer, correctAnswer } = feedback;
+    let className = 'answer-option';
+
+    if (status === null) {
+      return className;
+    }
+
+    const isSelected = option === selectedAnswer;
+    const isCorrect = option === correctAnswer;
+
+    if (status === 'correct' && isSelected) {
+      className += ' bg-green-200 border-green-500';
+    } else if (status === 'incorrect' && isSelected) {
+      className += ' bg-red-200 border-red-500';
+    } else if (status === 'showing_correct_answer') {
+      if (isSelected) {
+         className += ' bg-red-200 border-red-500';
+      }
+      if (isCorrect) {
+        className += ' bg-green-200 border-green-500';
+      }
+    }
+    return className;
+  };
+
   return (
     <div className="flex flex-col items-center">
       <h2 className="text-xl font-bold mb-2">Solve the problem:</h2>
@@ -62,7 +95,7 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({ question, onAnswer, d
             <div
               key={index}
               onClick={() => handleOptionClick(option)}
-              className={`answer-option ${selectedOption === option ? 'ring-2 ring-blue-500' : ''}`}
+              className={getOptionClass(option)}
             >
               {option}
             </div>
@@ -90,10 +123,17 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({ question, onAnswer, d
         </form>
       )}
       
-      {/* General Hint */}
-      <div className="mt-6 text-center text-gray-600">
-        <p>Tip: Break down complex problems into smaller steps.</p>
-        <p>Take your time and double-check your work!</p>
+      {/* Feedback message */}
+      <div className="mt-6 text-center text-lg font-semibold min-h-[28px]">
+        {feedback.status === 'correct' && (
+            <span className="text-green-600">Correct! 🎉</span>
+        )}
+        {feedback.status === 'incorrect' && (
+            <span className="text-red-600">Incorrect!</span>
+        )}
+        {feedback.status === 'showing_correct_answer' && (
+            <span className="text-green-600">The correct answer is <span className="font-bold">{feedback.correctAnswer}</span>.</span>
+        )}
       </div>
     </div>
   );

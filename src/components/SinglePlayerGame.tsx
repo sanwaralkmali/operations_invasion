@@ -20,8 +20,11 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [lives, setLives] = useState<number>(3);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [showAnimation, setShowAnimation] = useState<boolean>(false);
-  const [animationType, setAnimationType] = useState<'correct' | 'incorrect'>('correct');
+  const [feedback, setFeedback] = useState<{
+    status: 'correct' | 'incorrect' | 'showing_correct_answer' | null;
+    correctAnswer?: number | string;
+    selectedAnswer?: number | string | null;
+  }>({ status: null });
   const [gameActive, setGameActive] = useState<boolean>(true);
   const [waveComplete, setWaveComplete] = useState<boolean>(false);
   const [streak, setStreak] = useState<number>(0);
@@ -29,6 +32,7 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
   const [correctAnswersCount, setCorrectAnswersCount] = useState<number>(0);
   const [totalQuestionsAnswered, setTotalQuestionsAnswered] = useState<number>(0);
   const [startTime, setStartTime] = useState<number>(Date.now());
+  const [lastAnswered, setLastAnswered] = useState<null | { isCorrect: boolean; correctAnswer: number | string; selectedAnswer: number | string | null }>(null);
   
   const initializeGame = useCallback(async () => {
     setIsLoading(true);
@@ -119,8 +123,8 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
   
   // Handle answer selection
   const handleAnswer = (selectedAnswer: number | string) => {
-    if (!currentQuestion || !gameActive) return;
-    
+    if (!currentQuestion || !gameActive || feedback.status) return;
+
     const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
     
     if (isCorrect) {
@@ -148,47 +152,55 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
       }
       
       setScore(prev => prev + pointsEarned);
-      setAnimationType('correct');
+      setFeedback({ status: 'correct', selectedAnswer });
+      setTimeout(() => {
+        setFeedback({ status: null });
+        setTotalQuestionsAnswered(prev => prev + 1);
+        moveToNextQuestion();
+      }, 2000); // 2 seconds for "Correct!"
     } else {
       setLives(prev => prev - 1);
       setStreak(0);
-      setAnimationType('incorrect');
       
-      // Check if game over
-      if (lives <= 1) {
-        endGame();
-        return;
-      }
+      const isGameOver = lives <= 1;
+      
+      setFeedback({ status: 'incorrect', selectedAnswer, correctAnswer: currentQuestion.correctAnswer });
+      setTimeout(() => {
+        setFeedback({ status: 'showing_correct_answer', selectedAnswer, correctAnswer: currentQuestion.correctAnswer });
+        setTimeout(() => {
+            if (isGameOver) {
+                endGame();
+            } else {
+                setFeedback({ status: null });
+                setTotalQuestionsAnswered(prev => prev + 1);
+                moveToNextQuestion();
+            }
+        }, 3000); // 3s for correct answer
+      }, 2000); // 2s for "Incorrect"
     }
-    
-    // Show animation
-    setShowAnimation(true);
-    setTimeout(() => {
-      setShowAnimation(false);
-      setTotalQuestionsAnswered(prev => prev + 1);
-      moveToNextQuestion();
-    }, 1000);
   };
   
   // Handle time up
   const handleTimeUp = () => {
+    if (!currentQuestion || feedback.status) return;
     setLives(prev => prev - 1);
     setStreak(0);
-    setAnimationType('incorrect');
+        
+    const isGameOver = lives <= 1;
     
-    // Check if game over
-    if (lives <= 1) {
-      endGame();
-      return;
-    }
-    
-    // Show animation
-    setShowAnimation(true);
+    setFeedback({ status: 'incorrect', selectedAnswer: null, correctAnswer: currentQuestion.correctAnswer });
     setTimeout(() => {
-      setShowAnimation(false);
-      setTotalQuestionsAnswered(prev => prev + 1);
-      moveToNextQuestion();
-    }, 1000);
+      setFeedback({ status: 'showing_correct_answer', selectedAnswer: null, correctAnswer: currentQuestion.correctAnswer });
+      setTimeout(() => {
+          if (isGameOver) {
+              endGame();
+          } else {
+              setFeedback({ status: null });
+              setTotalQuestionsAnswered(prev => prev + 1);
+              moveToNextQuestion();
+          }
+      }, 3000); // 3s for correct answer
+    }, 2000); // 2s for "Incorrect"
   };
   
   // Move to the next question or wave
@@ -235,9 +247,7 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
 
     // Delay before showing game over screen
     const timeTaken = Math.floor((Date.now() - startTime) / 1000);
-    setTimeout(() => {
-      onGameOver(score, correctAnswersCount, totalQuestionsAnswered, timeTaken);
-    }, 2000);
+    onGameOver(score, correctAnswersCount, totalQuestionsAnswered, timeTaken);
   };
   
   // Calculate progress percentage for current wave
@@ -266,12 +276,12 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4 relative">
-      <button 
+      {/* <button 
         onClick={() => setShowLeaderboard(true)}
         className="absolute top-4 right-4 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded"
       >
         View Leaderboard
-      </button>
+      </button> */}
 
       {isLoading ? (
         <div className="text-center py-20">
@@ -327,25 +337,14 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
           
           {/* Main game area */}
           <div className="bg-white rounded-lg shadow-lg p-6 relative overflow-hidden">
-            {/* Animation overlay */}
-            {showAnimation && (
-              <div className={`absolute inset-0 flex items-center justify-center z-10 ${
-                animationType === 'correct' ? 'bg-green-100 bg-opacity-80' : 'bg-red-100 bg-opacity-80'
-              }`}>
-                <div className={`text-6xl ${
-                  animationType === 'correct' ? 'text-green-600' : 'text-red-600'
-                }`}>
-                  {animationType === 'correct' ? '✓' : '✗'}
-                </div>
-              </div>
-            )}
             
             {/* Question display */}
             {currentQuestion && (
               <QuestionDisplay 
                 question={currentQuestion} 
                 onAnswer={handleAnswer}
-                disabled={!gameActive || showAnimation || waveComplete}
+                disabled={!gameActive || waveComplete || !!feedback.status}
+                feedback={feedback}
               />
             )}
           </div>
@@ -361,12 +360,14 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
         </div>
       )}
 
+      {/*
       {showLeaderboard && (
         <Leaderboard 
           gameMode="single"
           onClose={() => setShowLeaderboard(false)} 
         />
       )}
+      */}
     </div>
   );
 };
