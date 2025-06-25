@@ -3,7 +3,6 @@ import { Player, Difficulty, Question, Wave } from '../types';
 import { generateWaves, formatTime, fetchQuestions } from '../utils/game';
 import QuestionDisplay from './QuestionDisplay';
 import ProgressBar from './ProgressBar';
-import Leaderboard from './Leaderboard';
 import { useNavigate } from 'react-router-dom';
 
 interface SinglePlayerGameProps {
@@ -29,11 +28,9 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
   const [gameActive, setGameActive] = useState<boolean>(true);
   const [waveComplete, setWaveComplete] = useState<boolean>(false);
   const [streak, setStreak] = useState<number>(0);
-  const [showLeaderboard, setShowLeaderboard] = useState<boolean>(false);
   const [correctAnswersCount, setCorrectAnswersCount] = useState<number>(0);
   const [totalQuestionsAnswered, setTotalQuestionsAnswered] = useState<number>(0);
   const [startTime, setStartTime] = useState<number>(Date.now());
-  const [lastAnswered, setLastAnswered] = useState<null | { isCorrect: boolean; correctAnswer: number | string; selectedAnswer: number | string | null }>(null);
   const navigate = useNavigate();
   
   const initializeGame = useCallback(async () => {
@@ -364,15 +361,6 @@ const SinglePlayerGame: React.FC<SinglePlayerGameProps> = ({ player, difficulty,
           )}
         </div>
       )}
-
-      {/*
-      {showLeaderboard && (
-        <Leaderboard 
-          gameMode="single"
-          onClose={() => setShowLeaderboard(false)} 
-        />
-      )}
-      */}
     </div>
   );
 };
