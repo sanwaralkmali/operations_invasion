@@ -128,3 +128,24 @@
 .rank-gold {
   @apply text-yellow-600 bg-yellow-100;
 }
+
+.animate-hit {
+  animation: hit-shake 0.7s cubic-bezier(.36,.07,.19,.97) both;
+}
+@keyframes hit-shake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-8px); }
+  40%, 60% { transform: translateX(8px); }
+}
+
+@keyframes projectile-move-right {
+  0% { left: 12%; opacity: 1; }
+  80% { opacity: 1; }
+  100% { left: 88%; opacity: 0; }
+}
+@keyframes projectile-move-left {
+  0% { left: 88%; opacity: 1; }
+  80% { opacity: 1; }
+  100% { left: 12%; opacity: 0; }
+}

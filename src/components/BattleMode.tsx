@@ -45,6 +45,13 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
   const [answered, setAnswered] = useState(false);
   const [turnComplete, setTurnComplete] = useState(false);
   const [suddenDeathResolved, setSuddenDeathResolved] = useState(false);
+  const [feedback, setFeedback] = useState<{
+    status: 'correct' | 'incorrect' | 'showing_correct_answer' | null;
+    correctAnswer?: number | string;
+    selectedAnswer?: number | string | null;
+  } | null>(null);
+  const [hitPlayerIndex, setHitPlayerIndex] = useState<number | null>(null);
+  const [projectile, setProjectile] = useState<null | { from: number; to: number }>(null);
 
   const navigate = useNavigate();
 
@@ -105,26 +112,30 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
   }, [gameActive, timeLeft, currentPlayerIndex]);
 
   const handleAnswer = (selectedAnswer: string | number | null) => {
-    if (!gameActive || answered) return;
+    if (!gameActive || answered || feedback) return;
     setAnswered(true);
     
     const correct = selectedAnswer !== null && selectedAnswer === questions[currentQuestionIndex]?.correctAnswer;
     const answerTime = 30 - timeLeft;
+    const correctAnswer = questions[currentQuestionIndex]?.correctAnswer;
 
-    setBattlePlayers(currentPlayers => {
-      const newPlayers = [...currentPlayers];
-      const attacker = { ...newPlayers[currentPlayerIndex] };
-      const defenderIndex = (currentPlayerIndex + 1) % 2;
-      const defender = { ...newPlayers[defenderIndex] };
+    if (correct) {
+      setFeedback({ status: 'correct', selectedAnswer });
+      setTimeout(() => {
+        setFeedback(null);
+        setBattlePlayers(currentPlayers => {
+          const newPlayers = [...currentPlayers];
+          const attacker = { ...newPlayers[currentPlayerIndex] };
+          const defenderIndex = (currentPlayerIndex + 1) % 2;
+          const defender = { ...newPlayers[defenderIndex] };
 
-      attacker.questionsAnswered += 1;
-      
-      if (correct) {
-        attacker.correctAnswers += 1;
-        if (battlePhase === 'suddenDeath') {
+          attacker.correctAnswers += 1;
+          attacker.questionsAnswered += 1;
+          
+          if (battlePhase === 'suddenDeath') {
             attacker.suddenDeathTime = answerTime;
             setStatusMessage({ text: `${attacker.name} answered correctly in ${answerTime}s!`, type: 'success' });
-        } else {
+          } else {
             const scoreGain = 10 + Math.max(0, 15 - answerTime);
             attacker.score += scoreGain;
             setShowAnimation('correct');
@@ -138,6 +149,10 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
             } else {
                 defender.lives -= 1;
                 newPlayers[defenderIndex] = defender;
+                setHitPlayerIndex(defenderIndex);
+                setProjectile({ from: currentPlayerIndex, to: defenderIndex });
+                setTimeout(() => setProjectile(null), 1100);
+                setTimeout(() => setHitPlayerIndex(null), 700);
                 setTimeout(() => setShowAnimation('attack'), 500);
 
                 if (defender.lives <= 0) {
@@ -146,34 +161,60 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
                     setTimeout(() => setStatusMessage({ text: `${defender.name}'s life is on the line!`, type: 'warning' }), 500);
                 }
             }
-        }
-      } else { // Incorrect Answer
-          setShowAnimation('incorrect');
-          setStatusMessage({ text: 'A swing and a miss!', type: 'error' });
+          }
+
+          newPlayers[currentPlayerIndex] = attacker;
+
+          // Check for sudden death
+          if (battlePhase === 'regular' && newPlayers.every(p => p.questionsAnswered >= 10)) {
+              setBattlePhase('suddenDeath');
+              setShowSuddenDeathIntro(true);
+              setGameActive(false); // Pause game for intro screen
+              setStatusMessage({ text: 'The tension is palpable! It all comes down to this...', type: 'special' });
+              return newPlayers; // Return early to show intro
+          }
           
-          if (battlePhase === 'lastChance' && currentPlayerIndex === lastChancePlayerIndex) {
+          setTurnComplete(true);
+          return newPlayers;
+        });
+        setAnswered(false);
+      }, 1200);
+    } else {
+      setFeedback({ status: 'incorrect', selectedAnswer, correctAnswer });
+      setTimeout(() => {
+        setFeedback({ status: 'showing_correct_answer', selectedAnswer, correctAnswer });
+        setTimeout(() => {
+          setFeedback(null);
+          setBattlePlayers(currentPlayers => {
+            const newPlayers = [...currentPlayers];
+            const attacker = { ...newPlayers[currentPlayerIndex] };
+            attacker.questionsAnswered += 1;
+            setShowAnimation('incorrect');
+            setStatusMessage({ text: 'A swing and a miss!', type: 'error' });
+            
+            if (battlePhase === 'lastChance' && currentPlayerIndex === lastChancePlayerIndex) {
               setTimeout(() => endGame(newPlayers), 1500);
               return newPlayers;
-          }
-          if (battlePhase === 'suddenDeath') {
+            }
+            if (battlePhase === 'suddenDeath') {
               attacker.suddenDeathTime = Infinity; // Mark as incorrect (or timed out)
-          }
-      }
-
-      newPlayers[currentPlayerIndex] = attacker;
-
-      // Check for sudden death
-      if (battlePhase === 'regular' && newPlayers.every(p => p.questionsAnswered >= 10)) {
-          setBattlePhase('suddenDeath');
-          setShowSuddenDeathIntro(true);
-          setGameActive(false); // Pause game for intro screen
-          setStatusMessage({ text: 'The tension is palpable! It all comes down to this...', type: 'special' });
-          return newPlayers; // Return early to show intro
-      }
-      
-      setTurnComplete(true);
-      return newPlayers;
-    });
+            }
+            newPlayers[currentPlayerIndex] = attacker;
+            // Check for sudden death
+            if (battlePhase === 'regular' && newPlayers.every(p => p.questionsAnswered >= 10)) {
+              setBattlePhase('suddenDeath');
+              setShowSuddenDeathIntro(true);
+              setGameActive(false); // Pause game for intro screen
+              setStatusMessage({ text: 'The tension is palpable! It all comes down to this...', type: 'special' });
+              return newPlayers; // Return early to show intro
+            }
+            setTurnComplete(true);
+            return newPlayers;
+          });
+          setAnswered(false);
+        }, 3000);
+      }, 1200);
+    }
   };
 
   const handleProceedToGameOver = useCallback(() => {
@@ -407,7 +448,7 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl relative">
+    <div className="flex-1 flex flex-col min-h-0 items-center justify-center w-full bg-gray-50 dark:bg-gray-900 p-4 relative">
       <button
         onClick={() => navigate('/')}
         title="Exit to Main Menu"
@@ -417,45 +458,98 @@ const BattleMode: React.FC<BattleModeProps> = ({ players, difficulty, onGameOver
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
-      <div className="flex justify-around mb-4 text-center">
+
+      {/* Player Info Row */}
+      <div className="flex w-full justify-between items-center mb-6 gap-4 relative">
         {battlePlayers.map((player, index) => (
-          <div key={player.id} className={`p-4 rounded-lg w-2/5 transition-all duration-300 ${index === currentPlayerIndex && gameActive ? 'bg-blue-900 shadow-lg scale-105' : 'bg-gray-700'}`}>
-            <h2 className="text-2xl font-bold text-white">{player.name}</h2>
-            <p className="text-3xl my-2">
+          <div
+            key={player.id}
+            className={`flex-1 flex flex-col items-center p-3 rounded-lg transition-all duration-300
+              ${index === currentPlayerIndex && gameActive ? 'bg-blue-50 dark:bg-blue-900 shadow-lg scale-105 border-2 border-blue-400' : 'bg-gray-100 dark:bg-gray-800 opacity-60'}
+              ${hitPlayerIndex === index ? 'animate-hit' : ''}
+            `}
+            style={{ minWidth: 0 }}
+          >
+            <div className={`text-lg font-bold ${index === currentPlayerIndex ? 'text-blue-700 dark:text-blue-200' : 'text-gray-500 dark:text-gray-400'}`}>{player.name}</div>
+            <div className="text-lg my-1">
               {'❤️'.repeat(player.lives) + '♡'.repeat(Math.max(0, 3 - player.lives))}
-            </p>
-            <p className="text-lg text-gray-300">Score: {player.score}</p>
+            </div>
+            <div className="text-base text-gray-700 dark:text-gray-300 font-semibold">Score: {player.score}</div>
           </div>
         ))}
+        {/* Projectile animation */}
+        {projectile && (
+          <div
+            className={`absolute top-1/2 left-0 w-full pointer-events-none z-30`}
+            style={{ height: 0 }}
+          >
+            <span
+              className={`block absolute transition-transform duration-700 ease-in-out text-3xl select-none`}
+              style={{
+                left: projectile.from === 0 ? '12%' : '88%',
+                transform: projectile.from === 0
+                  ? 'translateY(-50%) translateX(0)' // start left
+                  : 'translateY(-50%) translateX(-100%)', // start right
+                animation: projectile.from === 0
+                  ? 'projectile-move-right 1.1s forwards'
+                  : 'projectile-move-left 1.1s forwards',
+              }}
+            >
+              🗡️
+            </span>
+          </div>
+        )}
       </div>
 
-      {isLoading ? (
-        <div className="text-center">
-          <p className="text-2xl text-white">Loading Battle...</p>
-        </div>
-      ) : gameActive && currentQuestionData ? (
-        <>
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <div className="text-center mb-4">
-              <h2 className="text-2xl font-bold">
-                {battlePhase === 'suddenDeath' ? 'SUDDEN DEATH' : `${battlePlayers[currentPlayerIndex]?.name}'s turn`}
-              </h2>
-              <ProgressBar value={timeLeft} maxValue={30} />
-            </div>
+      {/* Main Question Area */}
+      <div className="w-full flex flex-col items-center">
+        <div className="w-full bg-white dark:bg-gray-900 rounded-xl shadow-xl p-6 mb-4 flex flex-col items-center">
+          <div className="mb-2 text-center">
+            <span className="text-xl font-bold text-indigo-700 dark:text-indigo-300">
+              {battlePhase === 'suddenDeath' ? 'SUDDEN DEATH' : `${battlePlayers[currentPlayerIndex]?.name}'s turn`}
+            </span>
+            <ProgressBar value={timeLeft} maxValue={30} />
+          </div>
+          {currentQuestionData ? (
             <QuestionDisplay
               question={currentQuestionData}
               onAnswer={handleAnswer}
-              disabled={!gameActive || showAnimation !== null || answered}
-              feedback={{ status: null }}
+              disabled={!gameActive || showAnimation !== null || answered || !!feedback}
+              feedback={feedback || { status: null }}
             />
+          ) : (
+            <div className="text-center text-lg text-gray-500">No question available.</div>
+          )}
+        </div>
+      </div>
+
+      {/* Feedback message */}
+      {feedback && (
+        <div className="w-full flex justify-center mt-2">
+          <div className={`text-center px-4 py-3 rounded-lg font-bold text-lg min-h-[2.5rem] ${
+            feedback.status === 'correct' ? 'text-green-600' :
+            feedback.status === 'incorrect' ? 'text-red-600' :
+            feedback.status === 'showing_correct_answer' ? 'text-green-600' :
+            ''
+          }`}
+          >
+            {feedback.status === 'correct' && 'Correct! 🎉'}
+            {feedback.status === 'incorrect' && 'Incorrect!'}
+            {feedback.status === 'showing_correct_answer' && (
+              <>The correct answer is <span className="font-bold">{feedback.correctAnswer}</span>.</>
+            )}
           </div>
-          {statusDisplay}
-        </>
-      ) : (
-        <>
-            {statusDisplay}
-            <div className="text-center text-2xl font-bold p-10">Battle Over!</div>
-        </>
+        </div>
+      )}
+
+      {isLoading && (
+        <div className="text-center mt-8">
+          <p className="text-2xl text-white">Loading Battle...</p>
+        </div>
+      )}
+      {/* Game Over fallback (should not show during active game) */}
+      {!gameActive && !showPostGameSummary && !showSuddenDeathIntro && (
+        <div className="text-center text-2xl font-bold p-10">Battle Over!</div>
       )}
     </div>
   );
