@@ -1,21 +1,27 @@
-import { Link } from "react-router-dom";
+import { Github, Linkedin } from 'lucide-react';
 
-const Footer: React.FC = () => {
+const Footer = () => {
   return (
-    <footer className="w-full py-4 text-center text-sm text-muted-foreground border-t">
-      <div className="container mx-auto">
-        <p>
-          Educational Game 2025 | Created for Educational purposes By{" "}
-          <Link 
-            to="https://sanwaralkmali.github.io/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-primary hover:underline"
-          >
-            Salah Alkmali
-          </Link>
-        </p>
+    <footer className="bg-gray-800 text-white p-4 text-center">
+      <div className="flex justify-center space-x-4">
+        <a
+          href="https://github.com/sanwaralkmali/operations_invasion"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Github className="w-6 h-6" />
+        </a>
+        <a
+          href="https://www.linkedin.com/in/sanwaralkmali/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Linkedin className="w-6 h-6" />
+        </a>
       </div>
+      <p className="mt-2">
+        © {new Date().getFullYear()} Sanwar Alkmali. All rights reserved.
+      </p>
     </footer>
   );
 };

@@ -1,124 +1,21 @@
 import React from 'react';
-import { Rank, Difficulty, GameMode } from '../types';
-import { formatTime } from '../utils/game';
 
 interface GameOverProps {
-  playerName: string;
   score: number;
-  correctAnswers: number;
-  totalQuestions: number;
-  timeTaken: number;
-  rank: Rank;
-  difficulty: Difficulty;
-  gameMode: GameMode;
-  onRestart: () => void;
-  onMainMenu: () => void;
-  winner?: string; // For battle mode
+  onPlayAgain: () => void;
 }
 
-const GameOver: React.FC<GameOverProps> = ({
-  playerName,
-  score,
-  correctAnswers,
-  totalQuestions,
-  timeTaken,
-  rank,
-  difficulty,
-  gameMode,
-  onRestart,
-  onMainMenu,
-  winner,
-}) => {
-  // Calculate accuracy correctly based on correct answers and total questions
-  const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
-  
-  const getRankClass = (rank: Rank): string => {
-    switch (rank) {
-      case 'bronze': return 'text-amber-700';
-      case 'silver': return 'text-gray-400';
-      case 'gold': return 'text-yellow-500';
-      default: return '';
-    }
-  };
-  
-  const getDifficultyLabel = (difficulty: Difficulty): string => {
-    switch (difficulty) {
-      case 'integers': return 'Integers';
-      case 'rational': return 'Rational Numbers';
-      case 'complex': return 'Complex Problems';
-      default: return 'Unknown';
-    }
-  };
-  
+const GameOver: React.FC<GameOverProps> = ({ score, onPlayAgain }) => {
   return (
-    <div className="flex flex-col items-center justify-center p-2 sm:p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md mx-auto min-h-[60vh]">
-      <h1 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 text-center">Game Over</h1>
-      
-      {gameMode === 'battle' && winner && (
-        <div className="mb-4 sm:mb-6 text-center">
-          <h2 className="text-xl sm:text-2xl font-bold mb-2">
-            {winner === playerName ? 'You Won! 🏆' : `${winner} Won! 🏆`}
-          </h2>
-        </div>
-      )}
-      
-      <div className="w-full mb-4 sm:mb-6">
-        <div className="flex justify-between mb-2 text-sm sm:text-base">
-          <span className="font-medium">Player:</span>
-          <span>{playerName}</span>
-        </div>
-        
-        <div className="flex justify-between mb-2 text-sm sm:text-base">
-          <span className="font-medium">Score:</span>
-          <span className="font-bold">{score}</span>
-        </div>
-        
-        <div className="flex justify-between mb-2 text-sm sm:text-base">
-          <span className="font-medium">Correct Answers:</span>
-          <span>{correctAnswers} / {totalQuestions + 1}</span>
-        </div>
-        
-        <div className="flex justify-between mb-2 text-sm sm:text-base">
-          <span className="font-medium">Accuracy:</span>
-          <span>{accuracy}%</span>
-        </div>
-        
-        {gameMode === 'single' && (
-          <>
-            <div className="flex justify-between mb-2 text-sm sm:text-base">
-              <span className="font-medium">Time:</span>
-              <span>{formatTime(timeTaken)}</span>
-            </div>
-            
-            <div className="flex justify-between mb-2 text-sm sm:text-base">
-              <span className="font-medium">Rank:</span>
-              <span className={`font-bold ${getRankClass(rank)}`}>
-                {rank.charAt(0).toUpperCase() + rank.slice(1)}
-              </span>
-            </div>
-          </>
-        )}
-        
-        <div className="flex justify-between mb-2 text-sm sm:text-base">
-          <span className="font-medium">Difficulty:</span>
-          <span>{getDifficultyLabel(difficulty)}</span>
-        </div>
-      </div>
-      
-      <div className="flex flex-col xs:flex-row gap-2 sm:gap-4 w-full mt-2">
-        <button
-          onClick={onRestart}
-          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg transition-colors text-base sm:text-lg"
-        >
-          Play Again
-        </button>
-        <button
-          onClick={onMainMenu}
-          className="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg transition-colors text-base sm:text-lg"
-        >
-          Main Menu
-        </button>
-      </div>
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white">
+      <h1 className="text-4xl font-bold mb-4">Game Over</h1>
+      <p className="text-2xl mb-8">Your final score is: {score}</p>
+      <button
+        onClick={onPlayAgain}
+        className="px-8 py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700"
+      >
+        Play Again
+      </button>
     </div>
   );
 };
